@@ -2,13 +2,18 @@ var express = require("express");
 var app = express();
 var server = require("http").Server(app);
 var _ = require('lodash');
+const GameRoom = require("./server/gameRoom");
 const ServerPlayer = require("./server/serverPlayer");
 const ClientPlayer = require("./server/clientPlayer");
 
-var players = [];
+let players = [];
 
 app.get("/", function (req, res) {
     res.sendFile(__dirname + "/client/index.html");
+});
+app.get('/checkHost', function (req, res) {
+    const room = req.query.room;
+    res.json({ "gotHost": checkForHost(room) })
 });
 app.use("/client", express.static(__dirname + "/client"));
 
@@ -29,8 +34,7 @@ function onConnect(socket) {
             let player = new ServerPlayer(data.room, data.name, data.pin, socket.id, data.host);
             players.push(player);
             const hostTag = (player.host) ? " (Host)" : "";
-            console.log(`${player.name}${hostTag} - Session Id: ${player.socketId}`);
-            io.to(`${player.socketId}`).emit("welcome", { msg: `Welcome ${player.name}` });
+            console.log(`${player.name}${hostTag} - Session Id: ${player.socketId} - Room: ${player.room}`);
         }
         else {
             // Rejoining Player
@@ -38,6 +42,17 @@ function onConnect(socket) {
         }
         broadcastPlayerList(data.room);        
     });
+};
+
+/**
+ * checkForHost() - Checks to see if a host has already been established for the room.
+ * @param {string} room - Room Id
+ */
+function checkForHost(room) {
+    let hasHost;
+    const hostIdx = _.findIndex(players, function(p) { return ((p.room === room) && (p.host)); });
+    hasHost = (hostIdx >= 0);
+    return hasHost;    
 };
 
 /**

@@ -21,7 +21,8 @@ var PlayerApp = function() {
  * initialize() - Initialize the Player Application object
  */
 PlayerApp.prototype.initialize = function () {
-    $("#signInDialog").show();    
+    $("#signInDialog").show();
+    $("#room").change(this.checkHostAvailable);  
 };
 
 /**
@@ -30,6 +31,7 @@ PlayerApp.prototype.initialize = function () {
 PlayerApp.prototype.generateRoom = function () {
     var x = uuidv4();
     $("#room").val(x);
+    this.checkHostAvailable();
 };
 
 /**
@@ -70,3 +72,13 @@ PlayerApp.prototype.updatePlayerList = function(data) {
     $("#roomTitle").text("Online Poker (" + this.room + ")");
 };
 
+PlayerApp.prototype.checkHostAvailable = function () {
+    var room = $("#room").val();
+    $.get( 
+        "checkHost",
+        { "room": room }, 
+        function( data ) {
+            $("#isHost").prop("disabled", data.gotHost);
+        }
+    );
+};
