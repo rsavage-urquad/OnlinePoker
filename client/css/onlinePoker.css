@@ -1,0 +1,59 @@
+.opponent-container {
+    padding: 10px;
+    min-height: 200px;
+}
+
+.player-container {
+    padding: 10px;
+    min-height: 250px;  
+}
+
+.info-container {
+    padding: 10px;
+    min-height: 250px;  
+}
+
+.section-container {
+    padding: 0;
+    background-color: #479030;     
+    color: white;
+}
+
+.padding-l {
+    padding-left: 15px;
+}
+
+.padding-r {
+    padding-right: 15px;
+}
+
+.section-container .row {
+    margin-right: 0;
+    margin-left: 0;
+}
+
+
+.border-t {
+    border-top:  1px solid white;
+}
+
+.border-l {
+    border-left:  1px solid black;
+}
+
+.border-b {
+    border-bottom:  1px solid black; 
+}
+
+.border-r {
+    border-right:  1px solid black;
+}
+
+.no-padding-lr {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.section-container h5 {
+    color: #e6ffe6;
+}

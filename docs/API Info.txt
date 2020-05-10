@@ -1,0 +1,43 @@
+Online Poker API
+
+Deal
+- InitiateAnte
+	- anteMode (dealer or each player)
+- DealAll
+	- startPlayer
+	- dealFaceDown
+- DealTo
+	- toPlayer
+	- numberOfCards
+	- dealFaceDown
+- PassDeck
+	- toPlayer (may be self - DBAJ, Guts, Commander ...)
+- ReceiveDeck
+- DeclareGame
+	- gameName
+- InitiateBet
+	- startPlayer
+	- minBet
+- Questions
+	- How to Pass Cards (Anaconda)
+	- How to Discard
+	- How to Deal from Discard Pile (and dont include my cards)
+
+Bet
+- RequestBet
+	- currentBet
+- Pass - If currentBet > 0, this option is disabled
+- Bold
+- Call
+- Raise
+
+
+Admin
+- BuyIn
+	- player
+	- amount
+- PickDealer
+	- player
+	- selectRandomPlayer
+- SetAnteMode
+	- anteMode (dealer or each player)

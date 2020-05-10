@@ -6,6 +6,7 @@
     <title>Online Poker</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" href="client/css/font-awesome.min.css">
+    <link rel="stylesheet" href="client/css/onlinePoker.css">
 </head>
 <body>
 
@@ -14,54 +15,136 @@
       <div class="col-xl-12"><h3 id="roomTitle">Online Poker</h3></div>
     </div>
 
-    <div class="row">
-      <div class="col-xl-9"></div>
-      <div class="col-xl-3">
-        <div class="row">
-          <div class="col-xl-12"><h4>Player Info:</h4></div>
-        </div>
-        <div id="playerInfoArea"></div>
-      </div>
-    </div>  
+    <div class="row padding-l padding-r">
+      <div class="col-xl-9 section-container border-t border-b border-l"> <!-- Left Area Div -->
+        <div class="row border-b"> <!-- Opponents 3 & 4 -->
+          <div class="col-xl-6 opponent-container">
+              <div class="row">
+                <div class="col-xl-12 no-padding-lr"><h5 id=opponentName-3></h5></div>
+              </div>
+              <div id="opponentCards-3"></div>
+          </div>      
+          <div class="col-xl-6 opponent-container border-l">
+            <div class="row">
+              <div class="col-xl-12 no-padding-lr"><h5 id=opponentName-4></h5></div>
+            </div>
+            <div id="opponentCards-4"></div>
+          </div>      
+        </div> <!-- Opponents 3 & 4 -->
 
-  </div>
-    <div class="modal" tabindex="-1" role="dialog" id="signInDialog">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">Player Sign In</h5>
+        <div class="row border-b"> <!-- Opponents 2 & 5 -->
+          <div class="col-xl-6 opponent-container">
+            <div class="row">
+              <div class="col-xl-12 no-padding-lr"><h5 id=opponentName-2></h5></div>
             </div>
-            <div class="modal-body">
-                <form>
-                  <div class="form-group">
-                    <label for="room">Room</label>
-                    <div class="input-group">
-                      <input type="text" class="form-control" id="room">
-                      <div class="input-group-append">
-                        <button type="button" class="btn btn-secondary" onclick="playerApp.generateRoom();"><i class="fa fa-cogs"></i></button>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                      <label for="playerName">Player Name</label>
-                      <input type="text" class="form-control" id="playerName">
-                    </div>
-                    <div class="form-group">
-                      <label for="playerPin">Password</label>
-                      <input type="text" class="form-control" id="playerPin">
-                    </div>
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" value="true" id="isHost" disabled>
-                      <label class="form-check-label" for="isHost"> Host</label>
-                    </div>
-                  </form>                
+            <div id="opponentCards-2"></div>
+          </div>      
+          <div class="col-xl-6 opponent-container border-l">
+            <div class="row">
+              <div class="col-xl-12 no-padding-lr"><h5 id=opponentName-5></h5></div>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary" onclick="playerApp.join();">Join</button>
+            <div id="opponentCards-5"></div>
+          </div>      
+        </div> <!-- Opponents 2 & 5 -->
+
+        <div class="row border-b"> <!-- Opponents 1 & 6 -->
+          <div class="col-xl-6 opponent-container">
+            <div class="row">
+              <div class="col-xl-12 no-padding-lr"><h5 id=opponentName-1></h5></div>
+            </div>
+            <div id="opponentCards-1"></div>
+          </div>      
+          <div class="col-xl-6 opponent-container border-l">
+            <div class="row">
+              <div class="col-xl-12 no-padding-lr"><h5 id=opponentName-6></h5></div>
+            </div>
+            <div id="opponentCards-6"></div>
+          </div>      
+        </div> <!-- Opponents 1 & 6 -->
+
+        <div class="row"> <!-- Player -->
+          <div class="col-xl-12 player-container">
+            <div class="row">
+              <div class="col-xl-12 no-padding-lr"><h5 id=playerName></h5></div>
+            </div>
+            <div class="row">
+              <div class="col-xl-10 no-padding-lr">
+                <div id="playerCards"></div>
+              </div>          
+              <div class="col-xl-2">
+                <div id="optionArea"></div>
+              </div>          
+            </div>
+          </div>   
+        </div>
+      </div> <!-- Left Area Div-->
+
+      <div class="col-xl-3 section-container border-t border-r border-b border-l"> <!-- Right Area Div-->
+        
+        <div class="info-container border-b">
+          <div class="row">
+            <div class="col-xl-12 no-padding-lr"><h5>Player Info:</h5></div>
+          </div>
+          <div id="playerInfoArea"></div>
+        </div>
+        
+        <div class="info-container border-b">
+          <div class="row">
+            <div class="col-xl-12 no-padding-lr"><h5>Hand Info:</h5></div>
+          </div>
+          <div id="handInfoArea"></div>
+        </div>
+
+        <div class="info-container">
+          <div class="row">
+            <div class="col-xl-12 no-padding-lr">
+                <h5>Dealer Commands:</h5>
+                <!-- Host Options Button -->
             </div>
           </div>
+          <div id="dealerCommandArea"></div>
         </div>
+      </div> <!-- Right Area Div-->
+    </div>  
+
+    <div class="modal" tabindex="-1" role="dialog" id="signInDialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Player Sign In</h5>
+          </div>
+          <div class="modal-body">
+              <form>
+                <div class="form-group">
+                  <label for="joinRoom">Room</label>
+                  <div class="input-group">
+                    <input type="text" class="form-control" id="joinRoom">
+                    <div class="input-group-append">
+                      <button type="button" class="btn btn-secondary" onclick="playerApp.generateRoom();"><i class="fa fa-cogs"></i></button>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                    <label for="joinPlayerName">Player Name</label>
+                    <input type="text" class="form-control" id="joinPlayerName">
+                  </div>
+                  <div class="form-group">
+                    <label for="joinPlayerPin">Password</label>
+                    <input type="text" class="form-control" id="joinPlayerPin">
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="true" id="joinIsHost" disabled>
+                    <label class="form-check-label" for="joinIsHost"> Host</label>
+                  </div>
+                </form>                
+          </div>
+          <div class="modal-footer">
+              <button class="btn btn-primary" onclick="playerApp.join();">Join</button>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
    
 </body>
 </html>
