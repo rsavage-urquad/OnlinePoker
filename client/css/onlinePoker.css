@@ -15,7 +15,9 @@
 
 .section-container {
     padding: 0;
-    background-color: #479030;     
+    /*background-color: #05a625;*/
+    background-color: #479030;
+    background-image: url("../img/felt.png");
     color: white;
 }
 
@@ -55,7 +57,8 @@
 }
 
 .section-container h5 {
-    color: #e6ffe6;
+    /*color: #e6ffe6;*/
+    color: white;
 }
 
 .errorInput {
