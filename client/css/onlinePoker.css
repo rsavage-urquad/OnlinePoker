@@ -57,3 +57,12 @@
 .section-container h5 {
     color: #e6ffe6;
 }
+
+.errorInput {
+    color: red;
+    background-color: #FFFFC0;
+}
+.errorText {
+    color: red;
+    font-style: italic;
+}

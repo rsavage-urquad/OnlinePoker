@@ -42,14 +42,34 @@ PlayerApp.prototype.generateRoom = function () {
  */
 PlayerApp.prototype.join = function() {
     var isHost = $("#joinIsHost").is(":checked");
+
+    this.setJoinError("reset", "");
     this.myName = $("#joinPlayerName").val()
     this.socket.emit("join", { 
         room: $("#joinRoom").val(), 
-        name: this.myName, 
+        name: this.myName.trim(), 
         pin: $("#joinPlayerPin").val(), 
         host: isHost });
+};
+
+/**
+ * joinSuccess() - Process "joinSuccess" message by hiding the Player Sign In dialog
+ */
+PlayerApp.prototype.joinSuccess = function() {
     $("#signInDialog").hide();
 };
+
+PlayerApp.prototype.setJoinError = function(status, errorMsg) {
+    if (status.toLowerCase() === "set") {
+        $("#joinPlayerName").addClass("errorInput");
+        $("#joinErrorMsg").text(errorMsg); 
+    }
+    else {
+        $("#joinPlayerName").removeClass("errorInput");
+        $("#joinErrorMsg").text(""); 
+    }
+};
+
 
 /** 
  * updatePlayerList() - Called by the Socket class, update the player list.

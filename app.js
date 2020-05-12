@@ -27,10 +27,15 @@ function onConnect(socket) {
 
     socket.on("join", function(data) {
         // Does Player already exist?, if so resume session.
-        playerIdx = checkIfUserExists(data.room, data.name, data.pin);
+        playerIdx = checkIfPlayerExists(data.room, data.name.trim(), data.pin);
         if (playerIdx === -1) {
-            // New Player
-            // TODO: RS - Use Random Number for Key to Player Dictionary
+            // New Player - Check to see if a player with the same name exists
+            if (checkIfPlayerNameExists(data.name)) {
+                socket.emit("joinError", {"errorMsg": "Player Name already exists."});
+                return;
+            }
+
+            // Add Player 
             let player = new ServerPlayer(data.room, data.name, data.pin, socket.id, data.host);
             players.push(player);
             const hostTag = (player.host) ? " (Host)" : "";
@@ -40,6 +45,11 @@ function onConnect(socket) {
             // Rejoining Player
             players[playerIdx].socketId = socket.id;
         }
+
+        // Notify Player of "join" success
+        socket.emit("joinSuccess");
+
+        // Send all players the updated Player List
         broadcastPlayerList(data.room);        
     });
 };
@@ -56,14 +66,24 @@ function checkForHost(room) {
 };
 
 /**
- * checkIfUserExists() - Checks if the player already exists (i.e. - Rejoining due to disconnect)
+ * checkIfPlayerExists() - Checks if the player already exists (i.e. - Rejoining due to disconnect)
  * @param {string} room - Room Id
  * @param {string} name - Player Name
  * @param {string} pin - Player Pin
  */
-function checkIfUserExists(room, name, pin) {
+function checkIfPlayerExists(room, name, pin) {
     return _.findIndex(players, function(item) { return (item.room === room && item.name === name && item.pin === pin); });
 };
+
+/**
+ * checkIfPlayerNameExists() - Checks to see if a Player name is already used
+ * @param {string} name - Player Name to check.
+ * @returns {boolean} - True is name used, otherwise false;
+ */
+function checkIfPlayerNameExists(name) {
+    const nameIdx = _.findIndex(players, function(item) { return (item.name === name); });
+    return (nameIdx !== -1);
+}
 
 /**
  * broadcastPlayerList() - Broadcast the list of players to all current players.
