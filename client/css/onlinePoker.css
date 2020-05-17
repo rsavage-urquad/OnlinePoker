@@ -34,7 +34,6 @@
     margin-left: 0;
 }
 
-
 .border-t {
     border-top:  1px solid white;
 }
@@ -68,4 +67,22 @@
 .errorText {
     color: red;
     font-style: italic;
+}
+
+.spacer {
+    padding-top: 20px;
+}
+
+.align-right {
+    text-align: right;
+}
+
+.host-ind {
+    color: aqua;
+    font-style: italic;
+}
+
+.dealer-ind {
+    color: yellow;
+    font-weight: bold;
 }

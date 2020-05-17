@@ -1,5 +1,5 @@
 /**
- * Socket Processing
+ * Socket Processing - Responsible for receiving and routing messages from server.
  */
 var socket= io();
 

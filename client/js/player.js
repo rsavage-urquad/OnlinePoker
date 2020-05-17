@@ -20,11 +20,11 @@ var Player = function (room, name, socketId, host, dealer, buyInAmount, amount) 
 
 /**
  * display() - Formats the Player Info for display.
- * @returns {STRING}
+ * @returns {string}
  */
 Player.prototype.display = function() {
-    var host = (this.host) ? " (Host)" : "";
-    var dealer = (this.dealer) ? " - Dealer" : "";
+    var host = (this.host) ? " (<span class='host-ind'>Host</span>)" : "";
+    var dealer = (this.dealer) ? " - <span class='dealer-ind'>Dealer</span>" : "";
     var amount = accounting.formatMoney(this.amount);
     return `${this.name}${host}${dealer} = ${amount}`;
 };

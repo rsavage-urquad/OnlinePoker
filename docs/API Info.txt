@@ -18,6 +18,14 @@ Deal
 - InitiateBet
 	- startPlayer
 	- minBet
+- EndHand
+	- Dialog for Dealer
+	- Show Running Pot Amount
+	- Potential for Multiple Winners
+		- Choose Winner
+		- Choose Amount ($ or %)
+	- Left Over
+		- Choose Winner
 - Questions
 	- How to Pass Cards (Anaconda)
 	- How to Discard
