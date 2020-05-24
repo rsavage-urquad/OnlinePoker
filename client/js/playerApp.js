@@ -11,7 +11,8 @@ $(document).ready(function() {
  * Player Application object
  */
 var PlayerApp = function() {
-    this.hostDialog = new HostDialog(this)
+    this.hostDialog = new HostDialog(this);
+    this.domHelpers = new DomHelpers();
     this.socket = socket;  
     this.playerList = [];
     this.opponentNoXref = [];
@@ -30,9 +31,20 @@ var PlayerApp = function() {
  * initialize() - Initialize the Player Application object
  */
 PlayerApp.prototype.initialize = function () {
-    $("#hostOpenDialogButton").hide();
-    $("#signInDialog").show();
+    this.setupDom();
     this.setupEvents();
+};
+
+/**
+ * setupDom() - Perform any DOM Setup
+ */
+PlayerApp.prototype.setupDom = function () {
+    // Set the Room Id from the Query String.
+    var room = this.domHelpers.getQueryStringValueByName("room");
+    room = ((room === undefined) || (room === null)) ? "" : room;
+    $("#joinRoom").val(room);
+
+    $("#signInDialog").show();
 };
 
 /**
@@ -59,10 +71,10 @@ PlayerApp.prototype.setupEvents = function () {
  */
 PlayerApp.prototype.generateRoom = function (event) {
     var x = uuidv4();
-    var realThis = event.data.obj;
+    var objThis = event.data.obj;
 
     $("#joinRoom").val(x);
-    realThis.checkHostAvailable();
+    objThis.checkHostAvailable();
 };
 
 /**
@@ -70,17 +82,24 @@ PlayerApp.prototype.generateRoom = function (event) {
  */
 PlayerApp.prototype.join = function(event) {
     var isHost = $("#joinIsHost").is(":checked");
-    var realThis = event.data.obj;
+    var objThis = event.data.obj;
+    var roomId = $("#joinRoom").val();
 
-    realThis.setJoinError("reset", "");
-    realThis.myName = $("#joinPlayerName").val();
+    objThis.resetJoinErrors();
+    objThis.myName = $("#joinPlayerName").val();
 
-    // Send "join" request to Server
-    realThis.socket.emit("join", { 
-        room: $("#joinRoom").val(), 
-        name: realThis.myName.trim(), 
-        pin: $("#joinPlayerPin").val(), 
-        host: isHost });
+    // Validate Input and, if valid, proceed.
+    if (objThis.validateJoinInfo()) {
+        // Send "join" request to Server
+        objThis.socket.emit("join", { 
+            room: roomId, 
+            name: objThis.myName.trim(), 
+            pin: $("#joinPlayerPin").val(), 
+            host: isHost });
+
+        // Set Url to include Room.
+        objThis.replaceUrl(roomId)
+    }
 };
 
 // ************************************************************************************************
@@ -157,6 +176,16 @@ PlayerApp.prototype.joinSuccess = function() {
 };
 
 /**
+ * resetJoinErrors - Removes error classes from Join Dialog fields.
+ */
+PlayerApp.prototype.resetJoinErrors = function() {
+    $("#joinRoom").removeClass("errorInput");
+    $("#joinPlayerName").removeClass("errorInput");
+    $("#joinPlayerPin").removeClass("errorInput");
+    $("#joinErrorMsg").text("");
+};
+
+/**
  * setJoinError() - Sets or resets the Join Error Message
  * @param {string} status - Determines if "set" or "reset" is being requested.
  * @param {string} errorMsg - Error Message
@@ -175,6 +204,37 @@ PlayerApp.prototype.setJoinError = function(status, errorMsg) {
 // ************************************************************************************************
 // Helpers Section
 // ************************************************************************************************
+
+/**
+ * validateJoinInfo() - Validate Join information.  All values must be present.
+ */
+PlayerApp.prototype.validateJoinInfo = function() {
+    var retValue = true;
+    var roomObj = $("#joinRoom");
+    var playerNameObj = $("#joinPlayerName");
+    var playerPinObj = $("#joinPlayerPin");
+
+    if (roomObj.val().trim() === "") {
+        retValue = false;
+        roomObj.addClass("errorInput");
+    }
+
+    if (playerNameObj.val().trim() === "") {
+        retValue = false;
+        playerNameObj.addClass("errorInput");
+    }
+
+    if (playerPinObj.val().trim() === "") {
+        retValue = false;
+        playerPinObj.addClass("errorInput");
+    }
+
+    if (!retValue) {
+        $("#joinErrorMsg").text("Please populate highlighted fields."); 
+    }
+
+    return retValue;
+};
 
 /**
  * setOpponentNoXref() - Create the opponent number xref.  This will be used when
@@ -206,4 +266,14 @@ PlayerApp.prototype.setOpponentNames = function() {
     _.forEach(this.opponentNoXref, function(item) {    
         $("#opponentName-" + item.opponentNo.toString()).text(item.name + ":");
     });
+};
+
+/**
+ * replaceUrl() - Replaces Url to add room info.  Warning - HTML5 (IE not supported)
+ * @param {string} roomId = Room Id (GUID)
+ */
+PlayerApp.prototype.replaceUrl = function(roomId) {
+    const params = new URLSearchParams(location.search);
+    params.set("room", roomId);
+    window.history.replaceState({}, '', `${location.pathname}?${params.toString()}`);    
 };

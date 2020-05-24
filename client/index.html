@@ -176,19 +176,45 @@
 
             <h5>Buy In</h5>
             <div class="row">
-              <div class="col-lg 12">To Do</div>
+              <div class="col-lg-12">To Do</div>
             </div>
             <div class="spacer"></div>
 
             <h5>Pick Dealer</h5>
-            <div class="row">
-              <div class="col-lg 12">To Do</div>
+            <fieldset class="form-group">
+              <div class="row">            
+                <legend class="col-sm-2 col-form-label">Choice Mode:</legend>
+                <div class="col-lg-10">
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="pickDealerOpt" id="pickDealerAuto" value="Auto">
+                    <label class="form-check-label" for="pickDealerAuto">Random</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="pickDealerOpt" id="pickDealerManual" value="Manual">
+                    <label class="form-check-label" for="pickDealerManual">Manual</label>
+                  </div>
+                </div>
+              </div>
+            </fieldset> 
+            <div id="pickDealerSelectRow" class="form-group row">
+              <div class="col-lg-2"></div>
+              <div class="col-lg-10">
+                <select id="pickDealerSelect" class="form-control">
+                  <option value="">--Please choose an option--</option> <!-- Place holder-->
+                </select>
+              </div>
+            </div>            
+            <div class="form-group row">
+              <div class="col-lg-2"></div>
+              <div class="col-lg-10">
+                <button id="pickDealerButton" type="button" class="btn btn-primary">Process</button>
+              </div>
             </div>
             <div class="spacer"></div>
 
             <h5>Set Ante Mode</h5>
             <div class="row">
-              <div class="col-lg 12">To Do</div>
+              <div class="col-lg-12">To Do</div>
             </div>
 
           </div>
@@ -210,6 +236,7 @@
 <script src="./client/js/libs/accounting.min.js"></script>
 <script src="./client/js/libs/uuidv4.min.js"></script>
 <script src="./client/js/Socket.js"></script>
+<script src="./client/js/DomHelpers.js"></script>
 <script src="./client/js/player.js"></script>
 <script src="./client/js/hostDialog.js"></script>
 <script src="./client/js/playerApp.js"></script>
