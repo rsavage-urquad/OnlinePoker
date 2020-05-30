@@ -6,7 +6,7 @@ const GameRoom = require("./server/gameRoom");
 const ServerPlayer = require("./server/serverPlayer");
 const ClientPlayer = require("./server/clientPlayer");
 
-let players = [];
+let rooms = {};
 
 app.get("/", function (req, res) {
     res.sendFile(__dirname + "/client/index.html");
@@ -26,27 +26,45 @@ io.on('connect', onConnect);
 function onConnect(socket) {
 
     socket.on("join", function(data) {
+        // Prepare Players for room.
+        let players = [];
+        if (rooms.hasOwnProperty(data.room)) {
+            players = rooms[data.room].players;
+        }
+
         // Does Player already exist?, if so resume session.
-        playerIdx = checkIfPlayerExists(data.room, data.name.trim(), data.pin);
+        playerIdx = checkIfPlayerExists(players, data.name.trim(), data.pin);
         if (playerIdx === -1) {
             // New Player - Check to see if a player with the same name exists
-            if (checkIfPlayerNameExists(data.name)) {
+            if (checkIfPlayerNameExists(players, data.name)) {
                 socket.emit("joinError", {"errorMsg": "Player Name already exists."});
                 return;
             }
 
             // Add Player 
             let player = new ServerPlayer(data.room, data.name, data.pin, socket.id, data.host);
-            players.push(player);
+            // Room Setup if necessary
+            if (rooms.hasOwnProperty(data.room)) {
+                // Update Players in Room
+                players.push(player);
+            }
+            else {
+                // Create Room
+                players = []
+                players.push(player);
+                rooms[data.room] = new GameRoom(data.room, players);
+            }
             const hostTag = (player.host) ? " (Host)" : "";
             console.log(`${player.name}${hostTag} - Session Id: ${player.socketId} - Room: ${player.room}`);
         }
         else {
             // Rejoining Player
+            players = rooms[data.room].players;
             players[playerIdx].socketId = socket.id;
         }
 
         // Notify Player of "join" success
+        socket.join(data.room); // Join the Socket.io Room.
         socket.emit("joinSuccess");
 
         // Send all players the updated Player List
@@ -60,27 +78,36 @@ function onConnect(socket) {
  */
 function checkForHost(room) {
     let hasHost;
-    const hostIdx = _.findIndex(players, function(p) { return ((p.room === room) && (p.host)); });
-    hasHost = (hostIdx >= 0);
-    return hasHost;    
+    let players = [];
+
+    if (rooms.hasOwnProperty(room)) {
+        players = rooms[room].players;
+        const hostIdx = _.findIndex(players, function(p) { return p.host; });
+        hasHost = (hostIdx >= 0);
+        return hasHost;            
+    }   
+
+    // Room does not exist.
+    return false;
 };
 
 /**
  * checkIfPlayerExists() - Checks if the player already exists (i.e. - Rejoining due to disconnect)
- * @param {string} room - Room Id
+ * @param {Array} players - Array of players associated with the room
  * @param {string} name - Player Name
  * @param {string} pin - Player Pin
  */
-function checkIfPlayerExists(room, name, pin) {
-    return _.findIndex(players, function(item) { return (item.room === room && item.name === name && item.pin === pin); });
+function checkIfPlayerExists(players, name, pin) {
+    return _.findIndex(players, function(item) { return (item.name === name && item.pin === pin); });
 };
 
 /**
  * checkIfPlayerNameExists() - Checks to see if a Player name is already used
+ * @param {Array} players - Array of players associated with the room
  * @param {string} name - Player Name to check.
  * @returns {boolean} - True is name used, otherwise false;
  */
-function checkIfPlayerNameExists(name) {
+function checkIfPlayerNameExists(players, name) {
     const nameIdx = _.findIndex(players, function(item) { return (item.name === name); });
     return (nameIdx !== -1);
 }
@@ -90,14 +117,33 @@ function checkIfPlayerNameExists(name) {
  * @param {string} room - Room Id (Guid)
  */
 function broadcastPlayerList(room) {
-    var playerList = [];
+    let players = [];
+    let emitPlayerList = [];
+
+    // Load Players to emit
+    if (rooms.hasOwnProperty(room)) {
+        players = rooms[room].players;
+    }   
+    else {
+        // Room does not exist.
+        return;
+    }
 
     players.forEach(element => {
-        if (element.room === room) {
-            const clientPlayer = new ClientPlayer(element.room, element.name, element.socketId, element.host, element.dealer, element.buyInAmount, element.amount);
-            playerList.push(clientPlayer);        
-        }
+        const clientPlayer = new ClientPlayer(element.room, element.name, element.socketId, element.host, element.dealer, element.buyInAmount, element.amount);
+        emitPlayerList.push(clientPlayer);        
     });
 
-    io.emit("playerList", { "playerList":  playerList });
+    // Emit to this Room's Players
+    emitToRoom(room, "playerList", { "playerList":  emitPlayerList });
+};
+
+/**
+ * emitToRoom() - Emits a message to each member of a Room
+ * @param {*} room - Room to send to.
+ * @param {*} messageType - Message Type
+ * @param {*} payload - Message Data (Object)
+ */
+function emitToRoom(room, messageType, payload) {
+    io.to(room).emit(messageType, payload);
 };
