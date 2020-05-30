@@ -22,7 +22,7 @@ HostDialog.prototype.initialize = function () {
  * setupDom() - Perform any DOM Setup
  */
 HostDialog.prototype.setupDom = function () {
-    $("#pickDealerAuto").attr('checked', true);
+    $("#pickDealerRandom").attr('checked', true);
     $("#pickDealerSelectRow").hide();
 };
 
@@ -33,7 +33,7 @@ HostDialog.prototype.setupEvents = function () {
     // Set Button Click Events
     $("#hostOpenDialogButton").click({obj: this}, this.open);
     $("#hostCloseDialogButton").click({obj: this}, this.close);
-    $("#pickDealerAuto").change({obj: this}, this.pickDealerManualChanged);
+    $("#pickDealerRandom").change({obj: this}, this.pickDealerManualChanged);
     $("#pickDealerManual").change({obj: this}, this.pickDealerManualChanged);
     $("#pickDealerButton").click({obj: this}, this.pickDealerProcessClick);    
 };
@@ -57,9 +57,13 @@ HostDialog.prototype.close = function () {
     $("#hostDialog").hide();    
 };
 
+/**
+ * pickDealerManualChanged() - Handles the Pick Dealer Manual "Changed" event.
+ * @param {Object} event - Object associated with triggered Event.
+ */
 HostDialog.prototype.pickDealerManualChanged = function(event) {
     var objThis = event.data.obj;
-    var selection =  $("input[name='pickDealerOpt']:checked"). val();
+    var selection =  $("input[name='pickDealerOpt']:checked").val();
 
     if (selection == "Manual") {
         objThis.populatePlayersList("pickDealerSelect");
@@ -70,10 +74,25 @@ HostDialog.prototype.pickDealerManualChanged = function(event) {
     }
 };
 
+/**
+ * pickDealerProcessClick() - Handles the Pick Dealer "Process" event.
+ * @param {Object} event - Object associated with triggered Event.
+ */
 HostDialog.prototype.pickDealerProcessClick = function(event) {
-    // TODO: Implement
-    console.log("pickDealerProcessClick Clicked");
+    var objThis = event.data.obj;
+    var mode = $("input[name='pickDealerOpt']:checked").val();
+    var player = (mode === "Random") ? "" : $("#pickDealerSelect").val();
+
+    objThis.playerApp.socket.emit("hostCommand", { 
+        room: objThis.playerApp.room,
+        command: "PickDealer",
+        payload: {
+            mode: mode,
+            player: player
+        }
+    });
 };
+
 
 // ************************************************************************************************
 // Data Activities Section

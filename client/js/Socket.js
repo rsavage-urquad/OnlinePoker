@@ -23,3 +23,10 @@ socket.on("joinSuccess", function() {
 socket.on("joinError", function(data) {
     playerApp.setJoinError("set", data.errorMsg);
 });
+
+/**
+ * "hostCommandSuccess" event - Closes the Host Dialog
+ */
+socket.on("hostCommandSuccess", function() {
+    playerApp.hostDialog.close();
+});

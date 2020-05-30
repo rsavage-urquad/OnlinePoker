@@ -68,6 +68,7 @@ PlayerApp.prototype.setupEvents = function () {
 
 /**
  * generateRoom() - Generates a Guid to act as the Room Id
+ * @param {Object} event - Object associated with triggered Event.
  */
 PlayerApp.prototype.generateRoom = function (event) {
     var x = uuidv4();
@@ -79,6 +80,7 @@ PlayerApp.prototype.generateRoom = function (event) {
 
 /**
  * join() - Process the Player "join" request
+ * @param {Object} event - Object associated with triggered Event.
  */
 PlayerApp.prototype.join = function(event) {
     var isHost = $("#joinIsHost").is(":checked");
@@ -101,6 +103,7 @@ PlayerApp.prototype.join = function(event) {
         objThis.replaceUrl(roomId)
     }
 };
+
 
 // ************************************************************************************************
 // Data Activities Section
