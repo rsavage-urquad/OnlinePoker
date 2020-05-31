@@ -39,10 +39,17 @@ PlayerApp.prototype.initialize = function () {
  * setupDom() - Perform any DOM Setup
  */
 PlayerApp.prototype.setupDom = function () {
+    $("#hostOpenDialogButton").hide();
+
     // Set the Room Id from the Query String.
     var room = this.domHelpers.getQueryStringValueByName("room");
     room = ((room === undefined) || (room === null)) ? "" : room;
     $("#joinRoom").val(room);
+
+    // If room is provided, check to see if Host checkbox should be enabled.
+    if (room !== "") {
+        this.checkHostAvailable();        
+    }
 
     $("#signInDialog").show();
 };

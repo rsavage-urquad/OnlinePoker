@@ -1,5 +1,4 @@
-const ServerPlayer = require("./serverPlayer");
-const ClientPlayer = require("./clientPlayer");
+const Player = require("./Player");
 const GameRoom = require("./gameRoom");
 const _ = require('lodash');
 
@@ -13,9 +12,14 @@ class SocketController {
         this.rooms = rooms;
     };
 
+
+    // ************************************************************************************************
+    // General Methods
+    // ************************************************************************************************
+
     /**
-     * 
-     * @param {*} data 
+     * join() - Handles a player joining a room.
+     * @param {Object} data - Socket payload
      */
     join(data) {
         // Prepare Players for room.
@@ -34,7 +38,7 @@ class SocketController {
             }
 
             // Add Player 
-            let player = new ServerPlayer(data.room, data.name, data.pin, this.socket.id, data.host);
+            let player = new Player(data.room, data.name, data.pin, this.socket.id, data.host);
             // Room Setup if necessary
             if (this.rooms.hasOwnProperty(data.room)) {
                 // Update Players in Room
@@ -96,14 +100,8 @@ class SocketController {
             return;
         }   
 
-        // Build the output Client List
-        this.rooms[room].players.forEach(element => {
-            const clientPlayer = new ClientPlayer(element.room, element.name, element.socketId, element.host, element.dealer, element.buyInAmount, element.amount);
-            emitPlayerList.push(clientPlayer);        
-        });
-
         // Emit to this Room's Players
-        this.emitToRoom(room, "playerList", { "playerList":  emitPlayerList });
+        this.emitToRoom(room, "playerList", { "playerList":  this.rooms[room].players });
     };
 
     /**
@@ -116,12 +114,25 @@ class SocketController {
         this.io.to(room).emit(messageType, payload);
     };
 
+
+    // ************************************************************************************************
+    // Host Section
+    // ************************************************************************************************
+
     /**
      * hostCommandSuccess() - Passes the "hostCommandSuccess" message back to the client.
      */
     hostCommandSuccess() {
         this.socket.emit("hostCommandSuccess");
-    }
+    };
+
+    /**
+     * hostCommandFailure() - Passes the hostCommandFailure" message back to the client.
+     * @param {string} msg - Error message to pass.
+     */
+    hostCommandFailure(msg) {
+        this.socket.emit("hostCommandFailure", msg);
+    }; 
 
 }
 

@@ -35,7 +35,8 @@ HostDialog.prototype.setupEvents = function () {
     $("#hostCloseDialogButton").click({obj: this}, this.close);
     $("#pickDealerRandom").change({obj: this}, this.pickDealerManualChanged);
     $("#pickDealerManual").change({obj: this}, this.pickDealerManualChanged);
-    $("#pickDealerButton").click({obj: this}, this.pickDealerProcessClick);    
+    $("#pickDealerButton").click({obj: this}, this.pickDealerProcessClick);
+    $("#setAnteModeButton").click({obj: this}, this.setAnteModeProcessClick);
 };
 
 
@@ -83,12 +84,31 @@ HostDialog.prototype.pickDealerProcessClick = function(event) {
     var mode = $("input[name='pickDealerOpt']:checked").val();
     var player = (mode === "Random") ? "" : $("#pickDealerSelect").val();
 
+    objThis.setError("");
     objThis.playerApp.socket.emit("hostCommand", { 
         room: objThis.playerApp.room,
         command: "PickDealer",
         payload: {
             mode: mode,
             player: player
+        }
+    });
+};
+
+/**
+ * setAnteModeProcessClick() - Handles the Set Ante Mode "Process" event.
+ * @param {Object} event - Object associated with triggered Event.
+ */
+HostDialog.prototype.setAnteModeProcessClick = function(event) {
+    var objThis = event.data.obj;
+
+    // TODO: Implement "setAnteModeProcessClick"
+
+    objThis.setError("");
+    objThis.playerApp.socket.emit("hostCommand", { 
+        room: objThis.playerApp.room,
+        command: "SetAnteMode",
+        payload: {
         }
     });
 };
@@ -102,6 +122,14 @@ HostDialog.prototype.pickDealerProcessClick = function(event) {
 // ************************************************************************************************
 // Display Processing Section
 // ************************************************************************************************
+
+/**
+ * setError() - Sets (or resets) the Host Dialog error message.
+ * @param {string} - msg - Message
+ */
+HostDialog.prototype.setError = function(msg) {
+    $("#hostErrorMsg").text(msg);
+};
 
 
 // ************************************************************************************************

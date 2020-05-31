@@ -3,6 +3,10 @@
  */
 var socket= io();
 
+// ************************************************************************************************
+// General Section
+// ************************************************************************************************
+
 /**
  * "playerList" event - Updates Player information from the server.
  */
@@ -24,9 +28,18 @@ socket.on("joinError", function(data) {
     playerApp.setJoinError("set", data.errorMsg);
 });
 
+
+// ************************************************************************************************
+// Host Section
+// ************************************************************************************************
+
 /**
  * "hostCommandSuccess" event - Closes the Host Dialog
  */
 socket.on("hostCommandSuccess", function() {
     playerApp.hostDialog.close();
+});
+
+socket.on("hostCommandFailure", function(msg) {
+    playerApp.hostDialog.setError(msg);
 });

@@ -46,7 +46,7 @@ function onConnect(socket) {
         } 
 
         const socketController = new SocketController(io, socket, rooms);
-        const hostController = new HostController(socketController, data.room, rooms[data.room].players);
+        const hostController = new HostController(socketController, rooms[data.room]);
         hostController.processCommand(data.command, data.payload);
     });  
 };
