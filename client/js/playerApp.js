@@ -12,6 +12,7 @@ $(document).ready(function() {
  */
 var PlayerApp = function() {
     this.hostDialog = new HostDialog(this);
+    this.dealerController = new DealerController(this);
     this.domHelpers = new DomHelpers();
     this.socket = socket;  
     this.playerList = [];
@@ -195,21 +196,6 @@ PlayerApp.prototype.resetJoinErrors = function() {
     $("#joinErrorMsg").text("");
 };
 
-/**
- * setJoinError() - Sets or resets the Join Error Message
- * @param {string} status - Determines if "set" or "reset" is being requested.
- * @param {string} errorMsg - Error Message
- */
-PlayerApp.prototype.setJoinError = function(status, errorMsg) {
-    if (status.toLowerCase() === "set") {
-        $("#joinPlayerName").addClass("errorInput");
-        $("#joinErrorMsg").text(errorMsg); 
-    }
-    else {
-        $("#joinPlayerName").removeClass("errorInput");
-        $("#joinErrorMsg").text(""); 
-    }
-};
 
 // ************************************************************************************************
 // Helpers Section
@@ -286,4 +272,19 @@ PlayerApp.prototype.replaceUrl = function(roomId) {
     const params = new URLSearchParams(location.search);
     params.set("room", roomId);
     window.history.replaceState({}, '', `${location.pathname}?${params.toString()}`);    
+};
+
+/**
+ * populatePlayersList() - Populates a Select List with Player's Names
+ * @param {string} domSelectId - Id of Select to populate.
+ */
+PlayerApp.prototype.populatePlayersList = function(domSelectId) {
+    var domObj = $("#" + domSelectId);
+    
+    domObj.empty();
+    domObj.append($('<option/>', { value: "", text : "-- Please choose a Player --" }));
+
+    _.forEach(this.playerList, function(player) {
+        domObj.append($('<option/>', { value: player.name, text : player.name }));
+    });
 };

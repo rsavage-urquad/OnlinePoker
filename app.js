@@ -4,6 +4,7 @@ const server = require("http").Server(app);
 const _ = require('lodash');
 const SocketController = require("./server/socketController");
 const HostController = require("./server/hostController");
+const DealerController = require("./server/dealerController");
 
 let rooms = {};
 
@@ -48,6 +49,20 @@ function onConnect(socket) {
         const socketController = new SocketController(io, socket, rooms);
         const hostController = new HostController(socketController, rooms[data.room]);
         hostController.processCommand(data.command, data.payload);
+    });  
+
+    /**
+     * "dealerCommand" - Dealer command processing.
+     */
+    socket.on("dealerCommand", function(data) {
+        // Make sure Room exists.  If not exit.
+        if (!rooms.hasOwnProperty(data.room)) {
+            return;
+        } 
+
+        const socketController = new SocketController(io, socket, rooms);
+        const dealerController = new DealerController(socketController, rooms[data.room]);
+        dealerController.processCommand(data.command, data.payload);
     });  
 };
 

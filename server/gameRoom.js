@@ -5,8 +5,9 @@ class GameRoom {
         this.room = room;
         this.players = players;
         this.anteMode = "player";
+        this.defaultAnte = .50;
         this.chipValues = [];
-        this.hands = [];
+        this.hand = {};
     }
 
     // ************************************************************************************************
@@ -34,7 +35,16 @@ class GameRoom {
         _.forEach(this.players, function(item, idx) {
             item.dealer = (idx === playerIdx);
         });
-    }
-}
+    };
+
+    /**
+     * passControlToDealer() - Sends the message to Pass control to the dealer
+     * @param {*} socketController 
+     */
+    passControlToDealer(socketController) {
+        const dealer = _.find(this.players, function(player) {return player.dealer});
+        socketController.emitToRoom(this.room, "dealerSetup", { "name": dealer.name, "defaultAnte": this.defaultAnte });
+    };
+};
 
 module.exports = GameRoom;

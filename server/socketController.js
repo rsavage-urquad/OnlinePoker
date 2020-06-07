@@ -134,6 +134,25 @@ class SocketController {
         this.socket.emit("hostCommandFailure", msg);
     }; 
 
+    // ************************************************************************************************
+    // Dealer Section
+    // ************************************************************************************************
+
+    /**
+     * dealerCommandSuccess() - Passes the "dealerCommandSuccess" message back to the client.
+     */
+    dealerCommandSuccess() {
+        this.socket.emit("dealerCommandSuccess");
+    };
+
+    /**
+     * dealerCommandFailure() - Passes the dealerCommandFailure" message back to the client.
+     * @param {string} msg - Error message to pass.
+     */
+    dealerCommandFailure(msg) {
+        this.socket.emit("dealerCommandFailure", msg);
+    }; 
+
 }
 
 module.exports = SocketController;

@@ -37,6 +37,7 @@ class HostController {
         this.gameRoom.setDealerByIdx(playerIdx);
         this.socketController.hostCommandSuccess();
         this.socketController.broadcastPlayerList(this.gameRoom.room);
+        this.gameRoom.passControlToDealer(this.socketController); 
     };
 }
 

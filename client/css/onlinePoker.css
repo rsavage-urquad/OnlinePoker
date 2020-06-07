@@ -86,3 +86,11 @@
     color: yellow;
     font-weight: bold;
 }
+
+.btn-margin {
+    margin-bottom: 2px;
+}
+
+.row-padding {
+    padding-bottom: 4px;
+}

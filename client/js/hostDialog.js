@@ -67,7 +67,7 @@ HostDialog.prototype.pickDealerManualChanged = function(event) {
     var selection =  $("input[name='pickDealerOpt']:checked").val();
 
     if (selection == "Manual") {
-        objThis.populatePlayersList("pickDealerSelect");
+        objThis.playerApp.populatePlayersList("pickDealerSelect");
         $("#pickDealerSelectRow").show();
     }
     else {
@@ -135,18 +135,3 @@ HostDialog.prototype.setError = function(msg) {
 // ************************************************************************************************
 // Helpers Section
 // ************************************************************************************************
-
-/**
- * populatePlayersList() - Populates a Select List with Player's Names
- * @param {string} domSelectId - Id of Select to populate.
- */
-HostDialog.prototype.populatePlayersList = function(domSelectId) {
-    var domObj = $("#" + domSelectId);
-    
-    domObj.empty();
-    domObj.append($('<option/>', { value: "", text : "-- Please choose a Player --" }));
-
-    _.forEach(this.playerApp.playerList, function(player) {
-        domObj.append($('<option/>', { value: player.name, text : player.name }));
-    });
-};

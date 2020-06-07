@@ -40,6 +40,20 @@ socket.on("hostCommandSuccess", function() {
     playerApp.hostDialog.close();
 });
 
+/**
+ * "hostCommandFailure" event - Displays the error message from the server.
+ */
 socket.on("hostCommandFailure", function(msg) {
     playerApp.hostDialog.setError(msg);
+});
+
+// ************************************************************************************************
+// dealer Section
+// ************************************************************************************************
+
+/**
+ * dealerSetup() - Passes the Dealer setup message to the app for processing.
+ */
+socket.on("dealerSetup", function(payload) {
+    playerApp.dealerController.dealerSetup(payload);
 });
