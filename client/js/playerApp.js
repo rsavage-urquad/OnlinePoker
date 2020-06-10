@@ -197,6 +197,11 @@ PlayerApp.prototype.resetJoinErrors = function() {
 };
 
 
+PlayerApp.prototype.displayHandInfo = function(payload) {
+    // TODO: Implement Display
+    console.log(payload);
+};
+
 // ************************************************************************************************
 // Helpers Section
 // ************************************************************************************************

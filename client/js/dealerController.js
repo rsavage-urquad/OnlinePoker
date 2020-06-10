@@ -30,7 +30,7 @@ DealerController.prototype.setupDom = function () {
  */
 DealerController.prototype.setupEvents = function () {
     // Set Button Click Events
-    $("#handSetupButton").click({obj: this}, this.startHandClicked);
+    $("#handStartButton").click({obj: this}, this.startHandClicked);
 };
 
 
@@ -43,7 +43,7 @@ DealerController.prototype.setupEvents = function () {
  * if valid, sending the message to the server.
  * @param {Object} event - Object associated with triggered Event.
  */
-DealerController.prototype.handSetup = function(event) {
+DealerController.prototype.startHandClicked = function(event) {
     var objThis = event.data.obj;
     objThis.resetHandSetupErrors();
 

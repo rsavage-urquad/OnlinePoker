@@ -1,4 +1,4 @@
-const _ = require('lodash');
+const _ = require("lodash");
 
 class Deck {
     constructor () {
@@ -21,7 +21,7 @@ class Deck {
 
         _.forEach(suits, (suit) => {
             _.forEach(values, (val) => {
-                deck.push({ "suit": suit, "value": val});
+                deck.push({ "suit": suit, "value": val, "faceUp": false});
             })
         });
 

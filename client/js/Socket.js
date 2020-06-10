@@ -57,3 +57,7 @@ socket.on("hostCommandFailure", function(msg) {
 socket.on("dealerSetup", function(payload) {
     playerApp.dealerController.dealerSetup(payload);
 });
+
+socket.on("handInfo", function(payload) {
+    playerApp.displayHandInfo(payload);
+});

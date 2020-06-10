@@ -38,6 +38,14 @@ class GameRoom {
     };
 
     /**
+     * getDealerIdx() - Gets the index of the player that is th dealer.
+     * @returns - Index of the player that is th dealer
+     */
+    getDealerIdx() {
+        return _.findIndex(this.players, function(p) { return p.dealer; });
+    };   
+
+    /**
      * passControlToDealer() - Sends the message to Pass control to the dealer
      * @param {*} socketController 
      */
@@ -45,6 +53,8 @@ class GameRoom {
         const dealer = _.find(this.players, function(player) {return player.dealer});
         socketController.emitToRoom(this.room, "dealerSetup", { "name": dealer.name, "defaultAnte": this.defaultAnte });
     };
+
+
 };
 
 module.exports = GameRoom;

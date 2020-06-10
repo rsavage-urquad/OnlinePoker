@@ -1,3 +1,5 @@
+const Hand = require("./hand");
+
 /**
  * DealerController Class - Responsible for Dealer Command interactions.
  */
@@ -25,11 +27,13 @@ class DealerController {
     }; 
 
     processHandSetup(payload) {
-        // TODO: Prepare Hand (Players, take out ante ...)
-        // TODO: Send Room Info (due to ante takeout)
-        // TODO: Send Hand Info to Room
+        this.gameRoom.hand = new Hand(this.socketController, this.gameRoom, payload.gameName, payload.wildInfo, payload.anteAmount);
+        this.gameRoom.hand.getAnte();
+        this.socketController.broadcastPlayerList(this.gameRoom.room);
+        this.gameRoom.hand.displayHandInfo();
+
         // TODO: Send Start Dealing to Dealer
-        console.log(payload);
+        console.log(this.gameRoom);
     }
 
 };
