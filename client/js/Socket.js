@@ -52,12 +52,20 @@ socket.on("hostCommandFailure", function(msg) {
 // ************************************************************************************************
 
 /**
- * dealerSetup() - Passes the Dealer setup message to the app for processing.
+ * "dealerSetup" - Passes the Dealer setup message to the app for processing.
  */
 socket.on("dealerSetup", function(payload) {
     playerApp.dealerController.dealerSetup(payload);
 });
 
+/**
+ * "handInfo" - Causes the "Hand Info" area to pe populated with info
+ * from the payload.
+ */
 socket.on("handInfo", function(payload) {
-    playerApp.displayHandInfo(payload);
+    playerApp.initializeHand(payload);
+});
+
+socket.on("initiateDealing", function() {
+    playerApp.dealerController.initiateDealing();
 });

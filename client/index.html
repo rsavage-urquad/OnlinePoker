@@ -96,7 +96,7 @@
       <div class="col-xl-3 section-container border-t border-r border-b border-l"> <!-- Right Area Div-->
         
         <!-- Player Info -->
-        <div class="info-container border-b">
+        <div class="info-container player-info-container border-b">
           <div class="row">
             <div class="col-xl-12 no-padding-lr"><h5>Player Info:</h5></div>
           </div>
@@ -104,11 +104,14 @@
         </div> <!-- Player Info -->
         
         <!-- Hand Info -->
-        <div class="info-container border-b">
+        <div class="info-container hand-info-container border-b">
           <div class="row">
-            <div class="col-xl-12 no-padding-lr"><h5>Hand Info:</h5></div>
+            <div class="col-xl-12 no-padding-lr">
+              <h5>Hand Info: <span id="handName" class="hand-name"></span></h5>
+            </div>
           </div>
-          <div id="handInfoArea"></div>
+          <div id="handCommentInfo" class="hand-name"></div>
+          <div id="handPlayerInfoArea"></div>
         </div> <!-- Hand Info -->
 
         <!-- Commands -->
@@ -129,18 +132,18 @@
             <div class="row row-padding">
               <div class="col-xl-3">Deal:</div>
               <div class="col-xl-9">
-                <button class="btn btn-sm btn-light btn-margin">Deal to All</button><br/>
-                <button class="btn btn-sm btn-light btn-margin">Deal to Next</button><br/>
-                <button class="btn btn-sm btn-light btn-margin">Deal to Specific</button> 
+                <button class="btn btn-sm btn-light btn-margin" id="dealToAll">Deal to All</button><br/>
+                <button class="btn btn-sm btn-light btn-margin" id="dealToNext">Deal to Next</button><br/>
+                <button class="btn btn-sm btn-light btn-margin" id="dealToSpecific">Deal to Specific</button> 
               </div>
             </div>
             <div class="row row-padding">
               <div class="col-xl-3">Other:</div>
               <div class="col-xl-9">
-                <button class="btn btn-sm btn-warning btn-margin">Request Payment</button><br/>
-                <button class="btn btn-sm btn-primary btn-margin">Initiate Betting</button><br/>
-                <button class="btn btn-sm btn-danger btn-margin">End Hand</button><br/>
-                <button class="btn btn-sm btn-danger btn-margin">Re-Deal Hand</button> 
+                <button class="btn btn-sm btn-warning btn-margin" id="requestPayment">Request Payment</button><br/>
+                <button class="btn btn-sm btn-primary btn-margin" id="initiateBetting">Initiate Betting</button><br/>
+                <button class="btn btn-sm btn-danger btn-margin" id="endHand">End Hand</button><br/>
+                <button class="btn btn-sm btn-danger btn-margin" id="reDealHand">Re-Deal Hand</button> 
               </div>
             </div>
           </div>
@@ -275,8 +278,8 @@
                 <input type="text" class="form-control" id="handGameName">
               </div>
               <div class="form-group">
-                <label for="handWildCardText">Wild Card(s)</label>
-                <input type="text" class="form-control" id="handWildCardText">
+                <label for="handCommentText">Comment Info</label>
+                <input type="text" class="form-control" id="handCommentText">
               </div>
               <div class="form-group">
                 <label for="handAnteAmount">Ante Amount</label>
@@ -307,6 +310,8 @@
 <script src="./client/js/player.js"></script>
 <script src="./client/js/hostDialog.js"></script>
 <script src="./client/js/dealerController.js"></script>
+<script src="./client/js/HandPlayer.js"></script>
+<script src="./client/js/Hand.js"></script>
 <script src="./client/js/playerApp.js"></script>
 
 <script>

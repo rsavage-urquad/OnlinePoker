@@ -48,6 +48,7 @@ HostDialog.prototype.setupEvents = function () {
  * open() - Opens the Host Dialog
  */
 HostDialog.prototype.open = function () {
+    // TODO: Reset default values in dialog.   
     $("#hostDialog").show();
 };
 

@@ -20,7 +20,6 @@ var Player = function (room, name, socketId, host, dealer, buyInAmount, amount) 
 
 /**
  * display() - Formats the Player Info for display.
- * @returns {string}
  */
 Player.prototype.display = function() {
     var host = (this.host) ? " (<span class='host-ind'>Host</span>)" : "";

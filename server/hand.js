@@ -3,11 +3,11 @@ Deck = require("./deck");
 HandPlayer = require("./handPlayer");
 
 class Hand {
-    constructor (socketController, gameRoom, name, wildInfo, anteAmount) {
+    constructor (socketController, gameRoom, name, commentInfo, anteAmount) {
         this.socketController = socketController;
         this.gameRoom = gameRoom;        
         this.name = name;
-        this.wildInfo = wildInfo;
+        this.commentInfo = commentInfo;
         this.anteAmount = parseFloat(anteAmount);
         this.deck = new Deck();
         this.players = this.initializePlayers();
@@ -86,7 +86,7 @@ class Hand {
             "handInfo", 
             {
                 "gameName": this.name,
-                "wildInfo": this.wildInfo,
+                "commentInfo": this.commentInfo,
                 "playerInfo": this.players
             }
         );

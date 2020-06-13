@@ -18,7 +18,6 @@ class DealerController {
         switch(command) {
             case "HandSetup":
                 this.processHandSetup(payload);
-                // TODO:
                 break;
             default:
                 this.socketController.dealerCommandFailure(`Unknown Command - ${command}`);                
@@ -26,14 +25,18 @@ class DealerController {
         }
     }; 
 
+    /**
+     * processHandSetup() - Processes the Hand Setup command by setting up the Hand,
+     * collecting the ante, sending messages to update the player display and informing
+     * the Dealer to start dealing.
+     * @param {Object} payload - Game Details sent from Dealer
+     */
     processHandSetup(payload) {
-        this.gameRoom.hand = new Hand(this.socketController, this.gameRoom, payload.gameName, payload.wildInfo, payload.anteAmount);
+        this.gameRoom.hand = new Hand(this.socketController, this.gameRoom, payload.gameName, payload.commentInfo, payload.anteAmount);
         this.gameRoom.hand.getAnte();
         this.socketController.broadcastPlayerList(this.gameRoom.room);
         this.gameRoom.hand.displayHandInfo();
-
-        // TODO: Send Start Dealing to Dealer
-        console.log(this.gameRoom);
+        this.socketController.dealerCommandInitiateDealing();
     }
 
 };

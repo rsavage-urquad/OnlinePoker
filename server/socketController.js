@@ -153,6 +153,12 @@ class SocketController {
         this.socket.emit("dealerCommandFailure", msg);
     }; 
 
+    /**
+     * dealerCommandInitiateDealing() - Notifies the dealer to start dealing.
+     */
+    dealerCommandInitiateDealing() {
+        this.socket.emit("initiateDealing");
+    };
 }
 
 module.exports = SocketController;

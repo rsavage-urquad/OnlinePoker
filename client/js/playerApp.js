@@ -21,6 +21,7 @@ var PlayerApp = function() {
     this.myName;
     this.mySocketId;
     this.isHost;
+    this.hand = {};
     this.initialize();
 } 
 
@@ -69,6 +70,15 @@ PlayerApp.prototype.setupEvents = function () {
     $("#hostCloseDialogButton").click({obj: this.hostDialog}, this.hostDialog.close);
 };
 
+/**
+ * initializeHand() - Initialize a hand and display the basic information
+ * @param {Object} payload - Hand Information from server.
+ */
+PlayerApp.prototype.initializeHand = function(payload) {
+    this.hand = new Hand(this, payload.gameName, payload.commentInfo, payload.playerInfo);
+    this.hand.displayHandDetails("handName", "handCommentInfo");
+    this.hand.displayHandPlayerInfo("handPlayerInfoArea");
+};
 
 // ************************************************************************************************
 // Events Section
@@ -196,11 +206,6 @@ PlayerApp.prototype.resetJoinErrors = function() {
     $("#joinErrorMsg").text("");
 };
 
-
-PlayerApp.prototype.displayHandInfo = function(payload) {
-    // TODO: Implement Display
-    console.log(payload);
-};
 
 // ************************************************************************************************
 // Helpers Section

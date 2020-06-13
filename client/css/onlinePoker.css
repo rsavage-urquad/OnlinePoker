@@ -13,6 +13,14 @@
     min-height: 250px;  
 }
 
+.info-container.player-info-container {
+    min-height: 220px;  
+}
+
+.info-container.hand-info-container {
+    min-height: 280px;  
+}
+
 .section-container {
     padding: 0;
     /*background-color: #05a625;*/
@@ -65,7 +73,7 @@
     background-color: #FFFFC0;
 }
 .errorText {
-    color: red;
+    color: sandybrown;
     font-style: italic;
 }
 
@@ -78,12 +86,31 @@
 }
 
 .host-ind {
-    color: aqua;
+    color: cyan;
     font-style: italic;
 }
 
 .dealer-ind {
-    color: yellow;
+    color: gold;
+    font-style: italic;
+}
+
+.fold-ind {
+    color: red;
+    font-style: italic;
+}
+
+.hand-name {
+    color: gold;
+    font-style: italic; 
+}
+
+.pot-total {
+    color: chartreuse;
+    font-style: italic; 
+}
+
+.bold {
     font-weight: bold;
 }
 

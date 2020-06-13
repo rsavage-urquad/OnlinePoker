@@ -31,6 +31,7 @@ DealerController.prototype.setupDom = function () {
 DealerController.prototype.setupEvents = function () {
     // Set Button Click Events
     $("#handStartButton").click({obj: this}, this.startHandClicked);
+    $("#dealToAll").click({obj: this}, this.dealToAllClicked);
 };
 
 
@@ -55,11 +56,25 @@ DealerController.prototype.startHandClicked = function(event) {
             command: "HandSetup",
             payload: {
                 gameName: $("#handGameName").val(),
-                wildInfo: $("#handWildCardText").val(),
+                commentInfo: $("#handCommentText").val(),
                 anteAmount: $("#handAnteAmount").val()
             }
         });
     }
+};
+
+/**
+ * initiateDealing() - Process the "initiateDealing" message by hiding the 
+ * Setup Hand dialog and showing the Dealer commands.
+ */
+DealerController.prototype.initiateDealing = function() {
+    $("#handSetupDialog").hide();
+    $("#dealerCommandArea").show();
+};
+
+DealerController.prototype.dealToAllClicked = function() {
+    // TODO: Initiate Deal to all
+    console.log("Deal to All Clicked");
 };
 
 
@@ -79,6 +94,8 @@ DealerController.prototype.dealerSetup = function(payload) {
     $("#dealerCommandArea").hide();
 
     if (payload.name === this.playerApp.myName) {
+        $("#handGameName").val("");
+        $("#handCommentText").val("");
         $("#handAnteAmount").val(accounting.toFixed(payload.defaultAnte, 2));
         $("#handSetupDialog").show();
     }
