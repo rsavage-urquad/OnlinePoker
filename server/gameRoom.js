@@ -22,6 +22,13 @@ class GameRoom {
         return _.findIndex(this.players, function(item) { return item.name === name; });       
     };
 
+    /**
+     * getPlayerObject() - Gets the Object for the Player by Name
+     * @param string} name - Player Name
+     */
+    getPlayerObject(name) {
+        return _.find(this.players, function(item) { return item.name === name; });       
+    };
     
     // ************************************************************************************************
     // Dealer Methods
@@ -43,7 +50,7 @@ class GameRoom {
      */
     getDealerIdx() {
         return _.findIndex(this.players, function(p) { return p.dealer; });
-    };   
+    };
 
     /**
      * passControlToDealer() - Sends the message to Pass control to the dealer

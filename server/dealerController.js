@@ -19,6 +19,9 @@ class DealerController {
             case "HandSetup":
                 this.processHandSetup(payload);
                 break;
+            case "DealToAll":
+                this.processDealToAll(payload);
+                break;                
             default:
                 this.socketController.dealerCommandFailure(`Unknown Command - ${command}`);                
                 return;
@@ -36,8 +39,26 @@ class DealerController {
         this.gameRoom.hand.getAnte();
         this.socketController.broadcastPlayerList(this.gameRoom.room);
         this.gameRoom.hand.displayHandInfo();
-        this.socketController.dealerCommandInitiateDealing();
-    }
+        const dealToNext = this.gameRoom.hand.getDealToNextName();
+        this.socketController.dealerCommandInitiateDealing(dealToNext);
+    };
+
+    processDealToAll(payload) {
+        let idx = this.gameRoom.hand.getHandPlayerIdx(payload.startPlayerName)
+
+        for (let i = 0; i < this.gameRoom.hand.players.length; i++) {
+            // Deal the card to the appropriate Player
+            if (!this.gameRoom.hand.players[idx].fold) {
+                this.gameRoom.hand.dealToPlayer(this.gameRoom.hand.players[idx].name, payload.dealMode);
+            }
+            
+            // Advance to the next player
+            idx++;
+            if (idx >= this.gameRoom.hand.players.length) { idx = 0; }
+        }
+
+        // TODO: Send Deal Success to Dealer
+    };
 
 };
 

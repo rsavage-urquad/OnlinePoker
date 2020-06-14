@@ -11,6 +11,7 @@ var Hand = function (playerApp, gameName, commentInfo, playerInfo) {
     this.commentInfo = commentInfo.trim();
     this.players = this.initializePlayers(playerInfo);
     this.hands = this.initializeHands();
+    this.dealToNextIdx = 0;
 };
 
 // ************************************************************************************************
@@ -107,3 +108,20 @@ Hand.prototype.displayHandPlayerInfo = function(elemId) {
 // ************************************************************************************************
 // Helpers Section
 // ************************************************************************************************
+
+/**
+ * getIdxOfPlayerName() - Gets the index of the requested Player's name.
+ * @param {string} playerName - Player name to locate
+ * @return - Index of Player
+ */
+Hand.prototype.getIdxOfPlayerName = function(playerName) {
+    return _.findIndex(this.players, function(p) { return p.name === (playerName); });
+};
+
+/**
+ * setDealToNextIdx() - Sets the Deal To Next index based on the supplied Player name.
+ * @param {string} dealToNextName - Player to deal to next.
+ */
+Hand.prototype.setDealToNextIdx = function(dealToNextName) {
+    this.dealToNextIdx = this.getIdxOfPlayerName(dealToNextName);
+};

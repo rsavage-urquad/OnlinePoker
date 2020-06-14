@@ -114,6 +114,15 @@ class SocketController {
         this.io.to(room).emit(messageType, payload);
     };
 
+    /**
+     * emitToPlayer() -Emits a message to a specific player
+     * @param {*} socketId - Socket to send to.
+     * @param {*} messageType - Message Type
+     * @param {*} payload - Message Data (Object)
+     */
+    emitToPlayer(socketId, messageType, payload) {
+        this.io.to(socketId).emit(messageType, payload);
+    };
 
     // ************************************************************************************************
     // Host Section
@@ -156,8 +165,8 @@ class SocketController {
     /**
      * dealerCommandInitiateDealing() - Notifies the dealer to start dealing.
      */
-    dealerCommandInitiateDealing() {
-        this.socket.emit("initiateDealing");
+    dealerCommandInitiateDealing(dealToNext) {
+        this.socket.emit("initiateDealing", { "dealToNext": dealToNext} );
     };
 }
 

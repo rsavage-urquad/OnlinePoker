@@ -72,6 +72,17 @@ class Hand {
         }
     };
 
+    dealToPlayer(playerName, dealMode) {
+        const playerIdx = this.getHandPlayerIdx(playerName);
+        const card = this.deck.dealNextCard();
+
+        // Mark Card as Face Up, if applicable.  Default is Face Down
+        if (dealMode === "U") {
+            card.faceUp = true;
+        }
+        this.playerCards[playerIdx].cards.push(card);
+        this.emitCard(playerName, card);
+    };
 
     // ************************************************************************************************
     // Display Methods
@@ -92,10 +103,63 @@ class Hand {
         );
     };
 
+    /**
+     * emitCard() - Deals a card to the Player and Room.  Player can be sent Face Up
+     * or Face Down.  If Face Up, the entire room will get the card Face Up.  Otherwise
+     * the entire room will get the card Face Down and the intended Player will get
+     * the card Face Up
+     * @param {*} playerName - Player to receive the Card
+     * @param {*} card - Card
+     */
+    emitCard(playerName, card) {
+        const downCard = { "suit": "X", "value": "X", "faceUp": false }
+        let dealCard = (card.faceUp) ? card : downCard;
+
+        this.socketController.emitToRoom(
+            this.gameRoom.room, 
+            "dealToPlayer",
+            {
+                "playerName": playerName,
+                "card": dealCard
+            }
+        );
+
+        // Deal the card to the player Face Up (if it was not already sent Face Up)
+        if (!card.faceUp) {
+            let player = this.gameRoom.getPlayerObject(playerName) 
+            this.socketController.emitToPlayer(
+                player.socketId, 
+                "dealToPlayer",
+                {
+                    "playerName": playerName,
+                    "card": card
+                }
+            );            
+        }
+    };
 
     // ************************************************************************************************
     // Helper Methods
     // ************************************************************************************************
+
+    /**
+     * getHandPlayerIdx() - Gets the index of the Hand Player by Name
+     * @param string} name - Player Name
+     */
+    getHandPlayerIdx(name) {
+        return _.findIndex(this.players, function(item) { return item.name === name; });       
+    };
+
+    /**
+     * getDealToNextName() - Returns the name of the player to the left of the dealer.
+     * @returns - Name of the player to the left of the dealer.
+     */
+    getDealToNextName() {
+        let dealToIdx = this.gameRoom.getDealerIdx();
+        dealToIdx++;
+        if (dealToIdx >= this.players.length) { dealToIdx = 0; }
+        return this.players[dealToIdx].name;
+    };
 
 
 

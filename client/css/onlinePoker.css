@@ -73,7 +73,7 @@
     background-color: #FFFFC0;
 }
 .errorText {
-    color: sandybrown;
+    color: red;
     font-style: italic;
 }
 
@@ -96,7 +96,7 @@
 }
 
 .fold-ind {
-    color: red;
+    color: sandybrown;
     font-style: italic;
 }
 

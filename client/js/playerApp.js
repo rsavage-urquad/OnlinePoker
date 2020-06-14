@@ -197,6 +197,18 @@ PlayerApp.prototype.joinSuccess = function() {
 };
 
 /**
+ * setJoinErrors() - Sets the indicators and Error Message when a "join"
+ * error occurs.
+ * @param {string} errMsg - Error Message
+ */
+PlayerApp.prototype.setJoinErrors = function(errMsg) {
+    $("#joinRoom").addClass("errorInput");
+    $("#joinPlayerName").addClass("errorInput");
+    $("#joinPlayerPin").addClass("errorInput");
+    $("#joinErrorMsg").text(errMsg);
+};
+
+/**
  * resetJoinErrors - Removes error classes from Join Dialog fields.
  */
 PlayerApp.prototype.resetJoinErrors = function() {

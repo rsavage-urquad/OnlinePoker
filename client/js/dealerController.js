@@ -32,6 +32,8 @@ DealerController.prototype.setupEvents = function () {
     // Set Button Click Events
     $("#handStartButton").click({obj: this}, this.startHandClicked);
     $("#dealToAll").click({obj: this}, this.dealToAllClicked);
+    $("#dealToNext").click({obj: this}, this.dealToNextClicked);
+    $("#dealToSpecific").click({obj: this}, this.dealToSpecificClicked);
 };
 
 
@@ -51,15 +53,14 @@ DealerController.prototype.startHandClicked = function(event) {
     // Validate Input and, if valid, proceed.
     if (objThis.validateHandSetupInfo()) {
         // Send "handSetup" request to Server
-        objThis.playerApp.socket.emit("dealerCommand", { 
-            room: objThis.playerApp.room,
-            command: "HandSetup",
-            payload: {
+        objThis.sendDealerCommand(
+            "HandSetup",
+            {
                 gameName: $("#handGameName").val(),
                 commentInfo: $("#handCommentText").val(),
                 anteAmount: $("#handAnteAmount").val()
-            }
-        });
+            }            
+        )
     }
 };
 
@@ -67,20 +68,77 @@ DealerController.prototype.startHandClicked = function(event) {
  * initiateDealing() - Process the "initiateDealing" message by hiding the 
  * Setup Hand dialog and showing the Dealer commands.
  */
-DealerController.prototype.initiateDealing = function() {
+DealerController.prototype.initiateDealing = function(payload) {
+    var dealToNextName = payload.dealToNext;
+    
+    this.updateDealToNext(dealToNextName);
+    $("#dealToNext").text("Deal to " + dealToNextName);
+    this.playerApp.hand.setDealToNextIdx(dealToNextName)
     $("#handSetupDialog").hide();
     $("#dealerCommandArea").show();
 };
 
-DealerController.prototype.dealToAllClicked = function() {
-    // TODO: Initiate Deal to all
-    console.log("Deal to All Clicked");
+/**
+ * dealToAllClicked() - Handles the Deal to All clicked event bu sending
+ * the appropriate command to the Server.
+ * @param {Object} event - Object associated with triggered Event.
+ */
+DealerController.prototype.dealToAllClicked = function(event) {
+    var objThis = event.data.obj;
+    var command = "DealToAll";
+    var payload = {};
+
+    payload.dealMode = $("input[name='dealMode']:checked").val();
+    payload.startPlayerName = objThis.playerApp.hand.players[objThis.playerApp.hand.dealToNextIdx].name;
+    objThis.sendDealerCommand(command, payload);
+};
+
+DealerController.prototype.dealToNextClicked = function(event) {
+    var objThis = event.data.obj;
+    var command = "DealToNext";
+    var payload = {};
+    
+    payload.dealMode = $("input[name='dealMode']:checked").val();
+    payload.toPlayerName = objThis.playerApp.hand.players[objThis.playerApp.hand.dealToNextIdx].name;
+    //objThis.sendDealerCommand(command, payload);
+
+    // TODO: Testing ... to remove
+    console.log("Deal to Next Clicked");
+
+    // Advance Deal to Next
+    objThis.advanceDealToNext(payload.toPlayerName); 
+};
+
+DealerController.prototype.dealToSpecificClicked = function(event) {
+    var objThis = event.data.obj;
+
+    payload.dealMode = $("input[name='dealMode']:checked").val();
+    var dealCommand = "DealToNext"
+
+    // TODO: Initiate Deal to Specific
+    console.log("Deal to Specific Clicked");
+    // TODO: Advance Deal to Next
 };
 
 
 // ************************************************************************************************
 // Data Activities Section
 // ************************************************************************************************
+
+/**
+ * sendDealerCommand() - Sends a dealer command to the server.
+ * @param {string} command - Dealer Command
+ * @param {Object} payload - Command Payload
+ */
+DealerController.prototype.sendDealerCommand = function(command, payload) {
+    this.playerApp.socket.emit("dealerCommand", { 
+        room: this.playerApp.room,
+        command: command,
+        payload: payload
+    });
+
+    // TODO: May want to disable Dealer Commands until Success Received?
+};
 
 
 // ************************************************************************************************
@@ -118,6 +176,14 @@ DealerController.prototype.setError = function(msg) {
     $("#handSetupErrorMsg").text(msg);
 };
 
+/**
+ * updateDealToNext() - Updates the hand's Deal to Next information
+ * @param {string} dealToNextName = Name of Player to deal to next.
+ */
+DealerController.prototype.updateDealToNext = function(dealToNextName) {
+    $("#dealToNext").text("Deal to " + dealToNextName);
+    this.playerApp.hand.setDealToNextIdx(dealToNextName)
+};
 
 // ************************************************************************************************
 // Helpers Section
@@ -163,4 +229,32 @@ DealerController.prototype.validateHandSetupInfo = function() {
     }
 
     return retValue;
+};
+
+/**
+ * advanceDealToNext() - Advance the Deal To Next info to the plater  to the left of
+ * the supplied Player
+ * @param {string} currentDealToName - Current Deal To Player
+ */
+DealerController.prototype.advanceDealToNext = function(currentDealToName) {
+    var safety = 0;
+    var playersLength = this.playerApp.hand.players.length;
+    var playerIdx = this.playerApp.hand.getIdxOfPlayerName(currentDealToName);
+    var initialPlayerIdx = playerIdx;
+    
+    // Advance the index until a non-Fold player is found (added a safety check to avoid infinite loop)
+    playerIdx++;
+    if (playerIdx >= playersLength) { playerIdx = 0; }
+    while ((!this.playerApp.hand.players[playerIdx].fold) || (safety >= playersLength)) {
+        playerIdx++;
+        if (playerIdx >= playersLength) { playerIdx = 0; }
+        safety++;
+    }
+
+    // If safety check triggered, make current player next.
+    if ((safety >= playersLength)) {
+        playerIdx = initialPlayerIdx;
+    }
+
+    this.updateDealToNext(this.playerApp.hand.players[playerIdx].name);
 };

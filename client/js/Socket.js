@@ -25,7 +25,7 @@ socket.on("joinSuccess", function() {
  * "joinError" event - Notifies player of a join error
  */
 socket.on("joinError", function(data) {
-    playerApp.setJoinError("set", data.errorMsg);
+    playerApp.setJoinErrors(data.errorMsg);
 });
 
 
@@ -66,6 +66,14 @@ socket.on("handInfo", function(payload) {
     playerApp.initializeHand(payload);
 });
 
-socket.on("initiateDealing", function() {
-    playerApp.dealerController.initiateDealing();
+/**
+ * "initiateDealing" - Causes the Dealer Commands to become active. 
+ */
+socket.on("initiateDealing", function(payload) {
+    playerApp.dealerController.initiateDealing(payload);
+});
+
+socket.on("dealToPlayer", function(payload) {
+    // TODO: Implement dealToPlayer
+    console.log(payload);
 });
