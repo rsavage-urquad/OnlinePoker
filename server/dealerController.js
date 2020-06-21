@@ -57,7 +57,8 @@ class DealerController {
             if (idx >= this.gameRoom.hand.players.length) { idx = 0; }
         }
 
-        // TODO: Send Deal Success to Dealer
+        // Inform dealer that deal completed.
+        this.socketController.dealerDealActionCompleted();
     };
 
 };

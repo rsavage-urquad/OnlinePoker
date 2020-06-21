@@ -73,7 +73,16 @@ socket.on("initiateDealing", function(payload) {
     playerApp.dealerController.initiateDealing(payload);
 });
 
+/**
+ * "dealToPlayer" - Receives a card and passes to the Hand to process. 
+ */
 socket.on("dealToPlayer", function(payload) {
-    // TODO: Implement dealToPlayer
-    console.log(payload);
+    playerApp.hand.receiveCard(payload);
+});
+
+/**
+ * "dealActionCompleted" - Deal operation completed.
+ */
+socket.on("dealActionCompleted", function(payload) {
+    playerApp.dealerController.dealActionCompleted(payload);
 });

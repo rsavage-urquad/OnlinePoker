@@ -148,25 +148,17 @@ class SocketController {
     // ************************************************************************************************
 
     /**
-     * dealerCommandSuccess() - Passes the "dealerCommandSuccess" message back to the client.
-     */
-    dealerCommandSuccess() {
-        this.socket.emit("dealerCommandSuccess");
-    };
-
-    /**
-     * dealerCommandFailure() - Passes the dealerCommandFailure" message back to the client.
-     * @param {string} msg - Error message to pass.
-     */
-    dealerCommandFailure(msg) {
-        this.socket.emit("dealerCommandFailure", msg);
-    }; 
-
-    /**
      * dealerCommandInitiateDealing() - Notifies the dealer to start dealing.
      */
     dealerCommandInitiateDealing(dealToNext) {
         this.socket.emit("initiateDealing", { "dealToNext": dealToNext} );
+    };
+
+    /**
+     * dealerDealActionCompleted() - Passes the "dealActionCompleted" message back to the client.
+     */
+    dealerDealActionCompleted() {
+        this.socket.emit("dealActionCompleted");
     };
 }
 

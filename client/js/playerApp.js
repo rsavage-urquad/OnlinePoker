@@ -78,6 +78,7 @@ PlayerApp.prototype.initializeHand = function(payload) {
     this.hand = new Hand(this, payload.gameName, payload.commentInfo, payload.playerInfo);
     this.hand.displayHandDetails("handName", "handCommentInfo");
     this.hand.displayHandPlayerInfo("handPlayerInfoArea");
+    this.hand.clearPlayerCardAreas();
 };
 
 // ************************************************************************************************
@@ -309,4 +310,23 @@ PlayerApp.prototype.populatePlayersList = function(domSelectId) {
     _.forEach(this.playerList, function(player) {
         domObj.append($('<option/>', { value: player.name, text : player.name }));
     });
+};
+
+/**
+ * getPlayerCardAreaName() - Determines the Card Area Id for selected Player Idx
+ * @param {number} playerIdx - Index of the player to determine Area Id
+ * @returns {string} - DOM Id of the player's Card area.
+ */
+PlayerApp.prototype.getPlayerCardAreaName = function(playerIdx) {
+    var realThis = this;
+    var areaNameId = 0;
+
+    // Find My Index
+    var MyIdx = _.findIndex(this.playerList, function(player) { return player.name == realThis.myName; });
+
+    // Determine Area Id
+    // - If Player Idx is greater than mine, the Id is the difference from their idx to mine.
+    // - If Player Idx is less than mine, the Id is their idx plus the number of players minus my idx.
+    var areaNameId = (playerIdx > MyIdx) ? (playerIdx - MyIdx) : (playerIdx + (this.playerList.length - MyIdx));
+    return "opponentCards-" + areaNameId.toString();
 };

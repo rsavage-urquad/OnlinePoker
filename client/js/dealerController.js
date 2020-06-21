@@ -88,6 +88,10 @@ DealerController.prototype.dealToAllClicked = function(event) {
     var command = "DealToAll";
     var payload = {};
 
+    // Disable Dealer Commands until completion message received
+    objThis.setDealerOptions("disable");
+
+    // Prepare and send command
     payload.dealMode = $("input[name='dealMode']:checked").val();
     payload.startPlayerName = objThis.playerApp.hand.players[objThis.playerApp.hand.dealToNextIdx].name;
     objThis.sendDealerCommand(command, payload);
@@ -100,10 +104,8 @@ DealerController.prototype.dealToNextClicked = function(event) {
     
     payload.dealMode = $("input[name='dealMode']:checked").val();
     payload.toPlayerName = objThis.playerApp.hand.players[objThis.playerApp.hand.dealToNextIdx].name;
+    // TODO: (Left Off Here) - Implement on server.
     //objThis.sendDealerCommand(command, payload);
-
-    // TODO: Testing ... to remove
-    console.log("Deal to Next Clicked");
 
     // Advance Deal to Next
     objThis.advanceDealToNext(payload.toPlayerName); 
@@ -120,6 +122,12 @@ DealerController.prototype.dealToSpecificClicked = function(event) {
     // TODO: Advance Deal to Next
 };
 
+/**
+ * dealActionCompleted() - Deal action completed, enable Dealer actions.
+ */
+DealerController.prototype.dealActionCompleted = function() {
+    this.setDealerOptions("enable");
+};
 
 // ************************************************************************************************
 // Data Activities Section
@@ -136,8 +144,6 @@ DealerController.prototype.sendDealerCommand = function(command, payload) {
         command: command,
         payload: payload
     });
-
-    // TODO: May want to disable Dealer Commands until Success Received?
 };
 
 
@@ -183,6 +189,19 @@ DealerController.prototype.setError = function(msg) {
 DealerController.prototype.updateDealToNext = function(dealToNextName) {
     $("#dealToNext").text("Deal to " + dealToNextName);
     this.playerApp.hand.setDealToNextIdx(dealToNextName)
+};
+
+/**
+ * setDealerOptions() - Enable or disable Dealer options to avoid accidental
+ * deal due to double click.
+ */
+DealerController.prototype.setDealerOptions = function(mode) {
+    var domElements = $("#dealerCommandArea button");
+    var isDisable = (mode === "disable");
+
+    _.forEach(domElements, function(elem) {
+        domElements.prop("disabled", isDisable);
+    });
 };
 
 // ************************************************************************************************
@@ -245,7 +264,7 @@ DealerController.prototype.advanceDealToNext = function(currentDealToName) {
     // Advance the index until a non-Fold player is found (added a safety check to avoid infinite loop)
     playerIdx++;
     if (playerIdx >= playersLength) { playerIdx = 0; }
-    while ((!this.playerApp.hand.players[playerIdx].fold) || (safety >= playersLength)) {
+    while ((this.playerApp.hand.players[playerIdx].fold) && (safety < playersLength)) {
         playerIdx++;
         if (playerIdx >= playersLength) { playerIdx = 0; }
         safety++;
