@@ -158,6 +158,7 @@ PlayerApp.prototype.updatePlayerList = function(data) {
 
     // Set Names in Player Area
     $("#playerName").text(this.myName + ":")
+    $("#selectMe").prop("value", this.myName);
     this.setOpponentNoXref();
     this.setOpponentNames();
 
@@ -284,6 +285,7 @@ PlayerApp.prototype.setOpponentNoXref = function() {
 PlayerApp.prototype.setOpponentNames = function() {
     _.forEach(this.opponentNoXref, function(item) {    
         $("#opponentName-" + item.opponentNo.toString()).text(item.name + ":");
+        $("#selectPlayer-" + item.opponentNo.toString()).prop("value", item.name);
     });
 };
 

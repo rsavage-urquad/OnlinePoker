@@ -125,3 +125,7 @@
 .card-container {
     position: relative;
 }
+
+.select-player {
+    display: none;
+}

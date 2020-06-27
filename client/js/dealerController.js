@@ -97,29 +97,72 @@ DealerController.prototype.dealToAllClicked = function(event) {
     objThis.sendDealerCommand(command, payload);
 };
 
+/**
+ * dealToNextClicked() - Handles the Deal to Next clicked event by sending
+ * the appropriate command to the Server.
+ * @param {Object} event - Object associated with triggered Event.
+ */
 DealerController.prototype.dealToNextClicked = function(event) {
     var objThis = event.data.obj;
-    var command = "DealToNext";
+    var command = "DealToSpecific";
     var payload = {};
-    
+
+    // Disable Dealer Commands until completion message received
+    objThis.setDealerOptions("disable");    
+
+    // Prepare and send command
     payload.dealMode = $("input[name='dealMode']:checked").val();
     payload.toPlayerName = objThis.playerApp.hand.players[objThis.playerApp.hand.dealToNextIdx].name;
-    // TODO: (Left Off Here) - Implement on server.
-    //objThis.sendDealerCommand(command, payload);
+    objThis.sendDealerCommand(command, payload);
 
     // Advance Deal to Next
     objThis.advanceDealToNext(payload.toPlayerName); 
 };
 
+/**
+ * dealToSpecificClicked() - Handles the Deal to Specific clicked event by 
+ * enabling the selection buttons
+ * @param {Object} event - Object associated with triggered Event.
+ */
 DealerController.prototype.dealToSpecificClicked = function(event) {
     var objThis = event.data.obj;
+    var buttonObj;
 
+    // Disable Dealer Commands until completion message received
+    objThis.setDealerOptions("disable");       
+
+    // Setup and display Select buttons
+    buttonObj = $("#selectMe");
+    buttonObj.unbind();
+    buttonObj.click({obj: objThis}, objThis.dealToSpecificSelected);
+    buttonObj.show();
+    _.forEach(objThis.playerApp.opponentNoXref, function(item) {
+        buttonObj = $("#selectPlayer-" + item.opponentNo.toString());
+        buttonObj.unbind();
+        buttonObj.click({obj: objThis}, objThis.dealToSpecificSelected);
+        buttonObj.show();
+    });
+};
+
+/**
+ * dealToSpecificSelected - Handle the Selected event for "Deal to Specific"
+ * purposes.  This includes sending the deal command to the server
+ * @param {Object} event - Object associated with triggered Event.
+ */
+DealerController.prototype.dealToSpecificSelected = function(event) {
+    var objThis = event.data.obj;
+    var command = "DealToSpecific";
+    var payload = {};
+
+    $(".select-player").hide();
+
+    // Prepare and send command
     payload.dealMode = $("input[name='dealMode']:checked").val();
-    var dealCommand = "DealToNext"
+    payload.toPlayerName = this.value;
+    objThis.sendDealerCommand(command, payload);
 
-    // TODO: Initiate Deal to Specific
-    console.log("Deal to Specific Clicked");
-    // TODO: Advance Deal to Next
+    // Advance Deal to Next
+    objThis.advanceDealToNext(payload.toPlayerName); 
 };
 
 /**

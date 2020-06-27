@@ -22,7 +22,10 @@ class DealerController {
             case "DealToAll":
                 this.processDealToAll(payload);
                 break;                
-            default:
+            case "DealToSpecific":
+                this.processDealToSpecific(payload);
+                break;                
+                default:
                 this.socketController.dealerCommandFailure(`Unknown Command - ${command}`);                
                 return;
         }
@@ -43,11 +46,15 @@ class DealerController {
         this.socketController.dealerCommandInitiateDealing(dealToNext);
     };
 
+    /**
+     * processDealToAll() - Deals a card to all players
+     * @param {*} payload - Includes if card should be dealt up/down and the starting player.
+     */
     processDealToAll(payload) {
         let idx = this.gameRoom.hand.getHandPlayerIdx(payload.startPlayerName)
 
         for (let i = 0; i < this.gameRoom.hand.players.length; i++) {
-            // Deal the card to the appropriate Player
+            // Deal a card to only active Players
             if (!this.gameRoom.hand.players[idx].fold) {
                 this.gameRoom.hand.dealToPlayer(this.gameRoom.hand.players[idx].name, payload.dealMode);
             }
@@ -56,6 +63,18 @@ class DealerController {
             idx++;
             if (idx >= this.gameRoom.hand.players.length) { idx = 0; }
         }
+
+        // Inform dealer that deal completed.
+        this.socketController.dealerDealActionCompleted();
+    };
+
+    /**
+     * processDealToSpecific() - Deals a card to a specific player.
+     * @param {*} payload - Includes if card should be dealt up/down and the player to deal to.
+     */
+    processDealToSpecific(payload) {
+        let idx = this.gameRoom.hand.getHandPlayerIdx(payload.toPlayerName)
+        this.gameRoom.hand.dealToPlayer(this.gameRoom.hand.players[idx].name, payload.dealMode);
 
         // Inform dealer that deal completed.
         this.socketController.dealerDealActionCompleted();
