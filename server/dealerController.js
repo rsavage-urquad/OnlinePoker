@@ -24,8 +24,11 @@ class DealerController {
                 break;                
             case "DealToSpecific":
                 this.processDealToSpecific(payload);
-                break;                
-                default:
+                break;
+            case "BetInitiate":
+                this.processBetInitiate(payload);
+                break;
+            default:
                 this.socketController.dealerCommandFailure(`Unknown Command - ${command}`);                
                 return;
         }
@@ -78,6 +81,15 @@ class DealerController {
 
         // Inform dealer that deal completed.
         this.socketController.dealerDealActionCompleted();
+    };
+
+    /**
+     * processBetInitiate() - Process the Bet Initiate message by passing it
+     * to the Hand object.
+     * @param {Object} payload - Information pertaining to message. 
+     */
+    processBetInitiate(payload) {
+        this.gameRoom.hand.BetInitiate(payload.startPlayerName);
     };
 
 };

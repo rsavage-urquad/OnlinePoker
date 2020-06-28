@@ -104,7 +104,14 @@
                 <div class="card-container" id="playerCards"></div>
               </div>          
               <div class="col-xl-2">
-                <div id="optionArea"></div>
+                <!-- Bet Area-->                
+                <div id="betArea">
+                  <button class="btn btn-sm btn-light btn-margin" id="betCheck">Check</button><br/>
+                  <button class="btn btn-sm btn-light btn-margin" id="betCall">Call</button><br/>
+                  <button class="btn btn-sm btn-warning btn-margin" id="betBetRaise">Bet/Raise</button><br/>
+                  <button class="btn btn-sm btn-danger btn-margin" id="betFold">Fold</button>                   
+                </div>
+
               </div>          
             </div>
           </div>   
@@ -140,6 +147,8 @@
                 <h5>Dealer Commands:</h5>
             </div>
           </div>
+
+          <!-- Dealing Commands-->
           <div id="dealerCommandArea">
             <div class="row row-padding">
               <div class="col-xl-3">Mode:</div>
@@ -166,6 +175,20 @@
               </div>
             </div>
           </div>
+
+          <!-- Initiate Betting Commands -->
+          <div id="initBetCommandArea" class="init-bet-command">
+            <div class="row row-padding">
+              <div class="col-xl-3">Bet Initiate:</div>
+              <div class="col-xl-9">
+                <button class="btn btn-sm btn-primary btn-margin" id="initiateBettingNext">Start with Next</button><br/>
+                <button class="btn btn-sm btn-primary btn-margin" id="initiateBettingSpecific">Start with Specific</button><br/>
+                <button class="btn btn-sm btn-danger btn-margin" id="initiateBettingCancel">Cancel</button><br/>
+              </div>
+            </div>
+
+          </div>
+
         </div> <!-- Commands -->
 
       </div> <!-- Right Area Div-->
@@ -329,6 +352,7 @@
 <script src="./client/js/player.js"></script>
 <script src="./client/js/hostDialog.js"></script>
 <script src="./client/js/dealerController.js"></script>
+<script src="./client/js/betController.js"></script>
 <script src="./client/js/HandPlayer.js"></script>
 <script src="./client/js/Hand.js"></script>
 <script src="./client/js/Card.js"></script>

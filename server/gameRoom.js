@@ -4,9 +4,10 @@ class GameRoom {
     constructor (room, players) {
         this.room = room;
         this.players = players;
-        this.anteMode = "player";
-        this.defaultAnte = .50;
-        this.chipValues = [];
+        this.anteMode = "player";   
+        this.defaultAnte = .50;     // TODO: defaultAnte (Host Commands)
+        this.chipValues = [];       // TODO: chipValues (Host Commands)
+        this.maxRaise = 3;          // TODO: maxRaise (Host Commands)
         this.hand = {};
     }
 

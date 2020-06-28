@@ -129,3 +129,7 @@
 .select-player {
     display: none;
 }
+
+.init-bet-command {
+    display: none;
+}

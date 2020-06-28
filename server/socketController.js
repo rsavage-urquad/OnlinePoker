@@ -160,6 +160,34 @@ class SocketController {
     dealerDealActionCompleted() {
         this.socket.emit("dealActionCompleted");
     };
+
+    /**
+     * dealerCommandFailure() - Passes the dealerCommandFailure" message back to the client.
+     * @param {string} msg - Error message to pass.
+     */
+    dealerCommandFailure(msg) {
+        this.socket.emit("dealerCommandFailure", msg);
+    };
+
+    /**
+     * dealerResume() - Informs dealer to resume dealing.
+     */
+    dealerResume() {
+        this.socket.emit("dealResume");
+    };
+
+    // ************************************************************************************************
+    // Dealer Section
+    // ************************************************************************************************
+
+    /**
+     * betCommandFailure() - Passes the betCommandFailure" message back to the client.
+     * @param {*} msg - Error message to pass.
+     */
+    betCommandFailure(msg) {
+        this.socket.emit("betCommandFailure", msg);
+    }
+    
 }
 
 module.exports = SocketController;

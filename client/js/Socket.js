@@ -47,19 +47,20 @@ socket.on("hostCommandFailure", function(msg) {
     playerApp.hostDialog.setError(msg);
 });
 
+
 // ************************************************************************************************
 // dealer Section
 // ************************************************************************************************
 
 /**
- * "dealerSetup" - Passes the Dealer setup message to the app for processing.
+ * "dealerSetup" event - Passes the Dealer setup message to the app for processing.
  */
 socket.on("dealerSetup", function(payload) {
     playerApp.dealerController.dealerSetup(payload);
 });
 
 /**
- * "handInfo" - Causes the "Hand Info" area to pe populated with info
+ * "handInfo" event - Causes the "Hand Info" area to pe populated with info
  * from the payload.
  */
 socket.on("handInfo", function(payload) {
@@ -67,22 +68,53 @@ socket.on("handInfo", function(payload) {
 });
 
 /**
- * "initiateDealing" - Causes the Dealer Commands to become active. 
+ * "initiateDealing" event - Causes the Dealer Commands to become active. 
  */
 socket.on("initiateDealing", function(payload) {
     playerApp.dealerController.initiateDealing(payload);
 });
 
 /**
- * "dealToPlayer" - Receives a card and passes to the Hand to process. 
+ * "dealToPlayer" event - Receives a card and passes to the Hand to process. 
  */
 socket.on("dealToPlayer", function(payload) {
     playerApp.hand.receiveCard(payload);
 });
 
 /**
- * "dealActionCompleted" - Deal operation completed.
+ * "dealActionCompleted" event - Deal operation completed.
  */
 socket.on("dealActionCompleted", function(payload) {
     playerApp.dealerController.dealActionCompleted(payload);
+});
+
+/**
+ * "dealerCommandFailure" event - Displays the error message from the server.
+ */
+socket.on("dealerCommandFailure", function(payload) {
+    // TODO: Implement "dealerCommandFailure" processing
+    console.log("Dealer Command Failure - " + payload);
+});
+
+socket.on("dealResume", function() {
+    playerApp.dealerController.dealResume();
+});
+
+// ************************************************************************************************
+// Betting Section
+// ************************************************************************************************
+
+/**
+ * "betRequest" event - Request that the player select a bet option.
+ */
+socket.on("betRequest", function(payload) {
+    playerApp.betController.enableBetting(payload);
+});
+
+/**
+ * "betCommandFailure" event - Displays the error message from the server.
+ */
+socket.on("betCommandFailure", function(payload) {
+    // TODO: Implement "dealerCommandFailure" processing
+    console.log("Bet Command Failure - " + payload);
 });

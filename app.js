@@ -5,6 +5,7 @@ const _ = require('lodash');
 const SocketController = require("./server/socketController");
 const HostController = require("./server/hostController");
 const DealerController = require("./server/dealerController");
+const BetController = require("./server/betController");
 
 let rooms = {};
 
@@ -63,7 +64,22 @@ function onConnect(socket) {
         const socketController = new SocketController(io, socket, rooms);
         const dealerController = new DealerController(socketController, rooms[data.room]);
         dealerController.processCommand(data.command, data.payload);
-    });  
+    });
+
+    socket.on("betCommand", function(data) {
+        // Make sure Room exists.  If not exit.
+        if (!rooms.hasOwnProperty(data.room)) {
+            return;
+        } 
+
+        const socketController = new SocketController(io, socket, rooms);
+        const betController = new BetController(socketController, rooms[data.room]);
+        betController.processCommand(data.command, data.payload);
+    });
+
+
+    //betCommand
+
 };
 
 /**

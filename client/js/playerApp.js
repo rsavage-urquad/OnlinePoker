@@ -13,6 +13,7 @@ $(document).ready(function() {
 var PlayerApp = function() {
     this.hostDialog = new HostDialog(this);
     this.dealerController = new DealerController(this);
+    this.betController = new BetController(this);
     this.domHelpers = new DomHelpers();
     this.socket = socket;  
     this.playerList = [];

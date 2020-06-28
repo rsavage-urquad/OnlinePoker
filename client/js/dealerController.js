@@ -29,11 +29,25 @@ DealerController.prototype.setupDom = function () {
  * setupEvents() - Set up various events handlers.
  */
 DealerController.prototype.setupEvents = function () {
+    // Reset any event handlers
+    $("#handStartButton").unbind();
+    $("#dealToAll").unbind();
+    $("#dealToNext").unbind();
+    $("#dealToSpecific").unbind();
+    $("#initiateBetting").unbind();
+    $("#initiateBettingNext").unbind();
+    $("#initiateBettingSpecific").unbind();
+    $("#initiateBettingCancel").unbind();
+
     // Set Button Click Events
     $("#handStartButton").click({obj: this}, this.startHandClicked);
     $("#dealToAll").click({obj: this}, this.dealToAllClicked);
     $("#dealToNext").click({obj: this}, this.dealToNextClicked);
     $("#dealToSpecific").click({obj: this}, this.dealToSpecificClicked);
+    $("#initiateBetting").click({obj: this}, this.initiateBettingClicked);
+    $("#initiateBettingNext").click({obj: this}, this.initiateBettingNextClicked);
+    $("#initiateBettingSpecific").click({obj: this}, this.initiateBettingSpecificClicked);
+    $("#initiateBettingCancel").click({obj: this}, this.initiateBettingCancelClicked);
 };
 
 
@@ -172,6 +186,64 @@ DealerController.prototype.dealActionCompleted = function() {
     this.setDealerOptions("enable");
 };
 
+/**
+ * dealResume() - Handles the "Deal Resume" message from the server.
+ */
+DealerController.prototype.dealResume = function() {
+    $("#dealerCommandArea").show();
+};
+
+/**
+ * initiateBettingClicked() - Handle the Initiate Betting clicked event by preparing
+ * and displaying the Initiate Betting options
+ * @param {*} event - Object associated with triggered Event.
+ */
+DealerController.prototype.initiateBettingClicked = function(event) {
+    var objThis = event.data.obj;
+    var startPlayerIdx = objThis.playerApp.hand.getIdxOfPlayerName(objThis.playerApp.myName);
+    var playerIdx = objThis.getNextActivePlayer(startPlayerIdx);
+
+    $("#initiateBetNext").text("Start with " + objThis.playerApp.hand.players[playerIdx].name);
+  
+    // Display commands
+    $("#dealerCommandArea").hide();
+    $("#initBetCommandArea").show();
+};
+
+/**
+ * initiateBettingNextClicked() - Handle the Initiate Betting Next clicked event by sending
+ * the command to the server.
+ * @param {Object} event - Object associated with triggered Event.
+ */
+DealerController.prototype.initiateBettingNextClicked = function(event) {
+    var objThis = event.data.obj;
+    var startPlayerIdx = objThis.playerApp.hand.getIdxOfPlayerName(objThis.playerApp.myName);
+    var playerIdx = objThis.getNextActivePlayer(startPlayerIdx);
+    var command = "BetInitiate";
+    var payload = {};
+
+    // Prepare and send command
+    payload.startPlayerName = objThis.playerApp.hand.players[playerIdx].name;
+    objThis.sendDealerCommand(command, payload);
+
+    // Hide Initiate Betting Commands
+    $("#initBetCommandArea").hide();
+};
+
+DealerController.prototype.initiateBettingSpecificClicked = function(event) {
+    // TODO: Implement initiateBettingSpecific
+};
+
+/**
+ * initiateBettingCancelClicked() - Handle the Cancel Initiate Betting clicked event by 
+ * resetting the command options.
+ * @param {Object} event - Object associated with triggered Event.
+ */
+DealerController.prototype.initiateBettingCancelClicked = function(event) {
+    $("#initBetCommandArea").hide();
+    $("#dealerCommandArea").show();
+}
+
 // ************************************************************************************************
 // Data Activities Section
 // ************************************************************************************************
@@ -299,9 +371,21 @@ DealerController.prototype.validateHandSetupInfo = function() {
  * @param {string} currentDealToName - Current Deal To Player
  */
 DealerController.prototype.advanceDealToNext = function(currentDealToName) {
+    var startPlayerIdx = this.playerApp.hand.getIdxOfPlayerName(currentDealToName);
+    var playerIdx = this.getNextActivePlayer(startPlayerIdx);
+    this.updateDealToNext(this.playerApp.hand.players[playerIdx].name);
+};
+
+/**
+ * getNextActivePlayer() - Determine the next "Active" player based on a starting
+ * player index.
+ * @param {number} startIdx - Starting player index.
+ * @returns {number} - Index of next "Active" player
+ */
+DealerController.prototype.getNextActivePlayer = function(startIdx) {
     var safety = 0;
     var playersLength = this.playerApp.hand.players.length;
-    var playerIdx = this.playerApp.hand.getIdxOfPlayerName(currentDealToName);
+    var playerIdx = startIdx;
     var initialPlayerIdx = playerIdx;
     
     // Advance the index until a non-Fold player is found (added a safety check to avoid infinite loop)
@@ -318,5 +402,5 @@ DealerController.prototype.advanceDealToNext = function(currentDealToName) {
         playerIdx = initialPlayerIdx;
     }
 
-    this.updateDealToNext(this.playerApp.hand.players[playerIdx].name);
+    return playerIdx;
 };

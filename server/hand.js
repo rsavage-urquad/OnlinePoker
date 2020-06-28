@@ -1,6 +1,7 @@
 const _ = require("lodash");
-Deck = require("./deck");
-HandPlayer = require("./handPlayer");
+const Deck = require("./deck");
+const HandPlayer = require("./handPlayer");
+const Bet = require("./bet");
 
 class Hand {
     constructor (socketController, gameRoom, name, commentInfo, anteAmount) {
@@ -14,6 +15,7 @@ class Hand {
         this.playerCards = this.initializePlayerCards();
         this.dealerIdx = this.gameRoom.getDealerIdx();
         this.dealToNext = (this.dealerIdx < (this.players.length - 1)) ? this.dealerIdx + 1 : 0;
+        this.bet = {};
 
         // Shuffle the deck
         this.deck.shuffle();
@@ -72,6 +74,11 @@ class Hand {
         }
     };
 
+    /**
+     * dealToPlayer() - Initiates the process to deal a card to a player.
+     * @param {string} playerName - Player name to deal to.
+     * @param {string} dealMode - Deal mode ("U"= Face Up, otherwise Face Down).
+     */
     dealToPlayer(playerName, dealMode) {
         const playerIdx = this.getHandPlayerIdx(playerName);
         const card = this.deck.dealNextCard();
@@ -84,6 +91,70 @@ class Hand {
         this.emitCard(playerName, card);
     };
 
+    /**
+     * BetInitiate() - Set up the bet object and send the Bet Request
+     * to the appropriate player.
+     * @param {string} playerName - Starting bettor's name.
+     */
+    BetInitiate(playerName) {
+        this.bet = new Bet(this, playerName, this.gameRoom.maxRaise);
+        this.emitBetMessage();
+    };
+
+    /**
+     * processBetCheck() - Handle the bettor's Check message.
+     * @param {Object} payload 
+     */
+    processBetCheck(payload) {
+        const playerName = payload.player;
+        if (this.bet.currentPlayer !== playerName) {
+            emitUnexpectedEvent(`Got a message from an unexpected player - ${playerName}`);
+            return;
+        }
+        this.bet.advanceBettingPlayer();
+        
+        // If betting is completed, inform dealer to continue.
+        if (this.bet.bettingEnded) {
+            this.socketController.dealerResume();
+        }
+        else {
+            this.emitBetMessage();
+        }
+    };
+
+    // ************************************************************************************************
+    // Communications Methods
+    // ************************************************************************************************
+
+    /**
+     * emitBetMessage() - Sends the Bet Request to the current player (as per Bet object).
+     */
+    emitBetMessage() {
+        const playerName = this.bet.currentPlayer;
+        let player = _.find(this.gameRoom.players, function(item) { return item.name === playerName; }); 
+        let betPlayerIdx = _.findIndex(this.bet.playerBets, function(item) { return item.name === playerName; });
+        let prevBetSum = this.bet.playerBets[betPlayerIdx].amount;
+
+        this.socketController.emitToPlayer(
+            player.socketId, 
+            "betRequest",
+            {
+                "currentBet": this.bet.currentBet,
+                "raiseCount": this.bet.raiseCount,                
+                "maxRaise": this.bet.maxRaise,
+                "prevBetSum": prevBetSum
+            }
+        ); 
+    };
+
+    /**
+     * emitUnexpectedEvent() - Send details on an Unexpected Event
+     * @param {string} msg - Details on Unexpected Event.
+     */
+    emitUnexpectedEvent(msg) {
+        this.socketController.betCommandFailure(msg);
+    };
+    
     // ************************************************************************************************
     // Display Methods
     // ************************************************************************************************
@@ -126,7 +197,7 @@ class Hand {
 
         // Deal the card to the player Face Up (if it was not already sent Face Up)
         if (!card.faceUp) {
-            let player = this.gameRoom.getPlayerObject(playerName) 
+            let player = this.gameRoom.getPlayerObject(playerName);
             this.socketController.emitToPlayer(
                 player.socketId, 
                 "dealToPlayer",
@@ -160,9 +231,6 @@ class Hand {
         if (dealToIdx >= this.players.length) { dealToIdx = 0; }
         return this.players[dealToIdx].name;
     };
-
-
-
 };
 
 module.exports = Hand;
