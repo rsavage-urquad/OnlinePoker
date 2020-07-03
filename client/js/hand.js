@@ -55,16 +55,47 @@ Hand.prototype.initializeHands = function() {
 Hand.prototype.receiveCard = function(cardInfo) {
     var player = cardInfo.playerName;
     var playerIdx = this.getIdxOfPlayerName(player);
-    var card;
 
     // Ignore any Face Down card (Suit = "X") for this Player as a separate card will be sent with the suit set.
     if ((player === this.playerApp.myName) && (cardInfo.card.suit === "X")) {
         return;
     }
 
-    card = new Card(cardInfo.card.suit, cardInfo.card.value, cardInfo.card.faceUp);
+    var card = new Card(cardInfo.card.suit, cardInfo.card.value, cardInfo.card.faceUp);
     this.hands[playerIdx].cards.push(card);
     this.displayHandCardsForPlayer(playerIdx, (player === this.playerApp.myName));
+};
+
+/**
+ * updatePlayerInfo() - Update the Player Info with data in the Payload.  
+ * This can include Fold processing.
+ * @param {Object} payload - Information for all Players.
+ */
+Hand.prototype.updatePlayerInfo = function(payload) {
+    var realThis = this;
+    var playerIdx;
+    var playerCardAreaName;
+
+    _.forEach(payload.playerInfo, function(player) {
+        playerIdx = realThis.getIdxOfPlayerName(player.name);
+        realThis.players[playerIdx].amount = player.amount;
+
+        // If the player has not folded, check to see if they have now folded and take action.
+        if (!realThis.players[playerIdx].fold) {
+            if (player.fold) {
+                realThis.players[playerIdx].fold = true;
+                
+                // Remove Cards from Player's hand.
+                realThis.hands[playerIdx].cards = [];
+
+                // Remove cards from Player's area.
+                playerCardAreaName = realThis.playerApp.getPlayerCardAreaName(playerIdx);
+                $("#" + playerCardAreaName).empty();
+            }
+        }
+    });
+
+    this.displayHandPlayerInfo("handPlayerInfoArea");
 };
 
 
@@ -175,6 +206,7 @@ Hand.prototype.displayHandCardsForPlayer = function(playerIdx, isMyPlayer) {
         leftOffset += offsetValue;
     });
 };
+
 
 // ************************************************************************************************
 // Helpers Section

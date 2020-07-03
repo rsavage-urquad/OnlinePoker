@@ -1,8 +1,8 @@
 class HandPlayer {
     constructor (name) {
         this.name = name;
-        this.fold = false;
         this.amount = 0.0;
+        this.fold = false;
     }
 }
 

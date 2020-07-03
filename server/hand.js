@@ -92,18 +92,18 @@ class Hand {
     };
 
     /**
-     * BetInitiate() - Set up the bet object and send the Bet Request
+     * betInitiate() - Set up the bet object and send the Bet Request
      * to the appropriate player.
      * @param {string} playerName - Starting bettor's name.
      */
-    BetInitiate(playerName) {
+    betInitiate(playerName) {
         this.bet = new Bet(this, playerName, this.gameRoom.maxRaise);
         this.emitBetMessage();
     };
 
     /**
      * processBetCheck() - Handle the bettor's Check message.
-     * @param {Object} payload 
+     * @param {Object} payload - Information associated with the message.
      */
     processBetCheck(payload) {
         const playerName = payload.player;
@@ -111,16 +111,31 @@ class Hand {
             emitUnexpectedEvent(`Got a message from an unexpected player - ${playerName}`);
             return;
         }
-        this.bet.advanceBettingPlayer();
-        
-        // If betting is completed, inform dealer to continue.
-        if (this.bet.bettingEnded) {
-            this.socketController.dealerResume();
-        }
-        else {
-            this.emitBetMessage();
-        }
+        this.sendNextBetMessage();
     };
+
+    /**
+     * processFold() - Handles the bettor's Fold message
+     * @param {object} payload - Information associated with the message.
+     */
+    processFold(payload) {
+        const playerName = payload.player;
+        if (this.bet.currentPlayer !== playerName) {
+            emitUnexpectedEvent(`Got a message from an unexpected player - ${playerName}`);
+            return;
+        }
+
+        // Mark Player as Folded
+        const playerIdx = this.getHandPlayerIdx(playerName)
+        this.players[playerIdx].fold = true;
+        
+        // Clear Player's Cards (send to Muck)
+        this.sendPlayersCardsToMuck(playerIdx);
+
+        // Send multiple messages to the Players (including Next Bet action).
+        this.displayHandPlayerArea();
+        this.sendNextBetMessage();
+    }
 
     // ************************************************************************************************
     // Communications Methods
@@ -133,8 +148,14 @@ class Hand {
         const playerName = this.bet.currentPlayer;
         let player = _.find(this.gameRoom.players, function(item) { return item.name === playerName; }); 
         let betPlayerIdx = _.findIndex(this.bet.playerBets, function(item) { return item.name === playerName; });
-        let prevBetSum = this.bet.playerBets[betPlayerIdx].amount;
 
+        // If there are no active players (betPlayerIdx = -1), send "dealerResume" message.
+        if (betPlayerIdx === -1) {
+            this.socketController.dealerResume();
+            return;
+        }
+
+        let prevBetSum = this.bet.playerBets[betPlayerIdx].amount;
         this.socketController.emitToPlayer(
             player.socketId, 
             "betRequest",
@@ -160,12 +181,12 @@ class Hand {
     // ************************************************************************************************
 
     /**
-     * displayHandInfo() - Send the Hand Information to the Room.
+     * displayHandInfo() - Send the Hand Information to the Room (initial send for Hand).
      */
     displayHandInfo() {
         this.socketController.emitToRoom(
             this.gameRoom.room, 
-            "handInfo", 
+            "handInfoInitialize", 
             {
                 "gameName": this.name,
                 "commentInfo": this.commentInfo,
@@ -173,6 +194,19 @@ class Hand {
             }
         );
     };
+
+    /**
+     * displayHandPlayerArea() - Sends the Hand's Player information message to the Room. 
+     */
+    displayHandPlayerArea() {
+        this.socketController.emitToRoom(
+            this.gameRoom.room, 
+            "handPlayerInfoUpdate", 
+            {
+                "playerInfo": this.players
+            }
+        );       
+    }
 
     /**
      * emitCard() - Deals a card to the Player and Room.  Player can be sent Face Up
@@ -209,6 +243,7 @@ class Hand {
         }
     };
 
+
     // ************************************************************************************************
     // Helper Methods
     // ************************************************************************************************
@@ -230,6 +265,34 @@ class Hand {
         dealToIdx++;
         if (dealToIdx >= this.players.length) { dealToIdx = 0; }
         return this.players[dealToIdx].name;
+    };
+
+    /**
+     * sendNextBetMessage() - Advance the Bettor and send the next Bet message 
+     * (either to next Bettor or Dealer, if betting completed).
+     */
+    sendNextBetMessage() {
+        this.bet.advanceBettingPlayer();
+
+        // If betting is completed, inform dealer to continue.
+        if (this.bet.bettingEnded) {
+            this.socketController.dealerResume();
+        }
+        else {
+            this.emitBetMessage();
+        }
+    };
+
+    /** 
+     * sendPlayersCardsToMuck() - Sends the players cards to the Deck's muck pile
+     * and clear out the platers cards.
+     */
+    sendPlayersCardsToMuck(playerIdx) {
+        const realThis = this;
+        _.forEach(this.playerCards[playerIdx].cards, function(item) {
+            realThis.deck.muck.push(item);
+        })
+        this.playerCards[playerIdx].cards = [];
     };
 };
 

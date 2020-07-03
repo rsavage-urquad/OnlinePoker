@@ -3,6 +3,7 @@
  */
 var BetController = function(parent) {
     this.playerApp = parent;
+    this.currentPayload = {};
     this.initialize();
 } 
 
@@ -123,13 +124,36 @@ BetController.prototype.hideBetCommands = function() {
  * @param {Object} payload - Information pertaining to Betting details. 
  */
 BetController.prototype.enableBetting = function(payload) {
+    var checkBtnObj = $("#betCheck");
+    var callBtnObj = $("#betCall");
+    var betBtnObj = $("#betBetRaise");
+    var betBtnText = "";
 
-    // TODO: (WIP) ----- Left off here
-    // TODO: Hide "Check" button if it is no longer an option.
-    // TODO: Set Text for "Call" (i.e. - Call $0.25).
-    // TODO: Set Text for Bet/Raise button
-    // TODO: Hold Payload details for future Bet/Raise Dialog
+    // Hold Payload details for Bet/Raise dialog (if needed)
+    this.currentPayload = payload;
 
+    // Prepare "Check" & "Call" buttons.
+    if (payload.currentBet > 0) {
+        checkBtnObj.hide();
+
+        // Set Call text and show button
+        callBtnObj.text("Call - " + accounting.formatMoney(payload.currentBet));
+        callBtnObj.show();
+    }
+    else {
+        checkBtnObj.show();
+        callBtnObj.hide();       
+    }
+
+    // Prepare Bet/Raise button
+    if (payload.raiseCount === payload.maxRaise) {
+        betBtnObj.hide();
+    }
+    else {
+        betBtnText = (payload.currentBet > 0) ? "Raise" : "Bet";
+        betBtnObj.text(betBtnText);
+        betBtnObj.show();
+    }
 
     $("#betArea").show();
 };

@@ -63,9 +63,18 @@ socket.on("dealerSetup", function(payload) {
  * "handInfo" event - Causes the "Hand Info" area to pe populated with info
  * from the payload.
  */
-socket.on("handInfo", function(payload) {
+socket.on("handInfoInitialize", function(payload) {
     playerApp.initializeHand(payload);
 });
+
+/**
+ * handPlayerInfoUpdate - Causes the Hand's Player Info and display area to 
+ * be populated with info from the payload.
+ */
+socket.on("handPlayerInfoUpdate", function(payload) {
+    playerApp.hand.updatePlayerInfo(payload);
+});
+
 
 /**
  * "initiateDealing" event - Causes the Dealer Commands to become active. 
@@ -115,6 +124,6 @@ socket.on("betRequest", function(payload) {
  * "betCommandFailure" event - Displays the error message from the server.
  */
 socket.on("betCommandFailure", function(payload) {
-    // TODO: Implement "dealerCommandFailure" processing
+    // TODO: Implement "betCommandFailure" processing
     console.log("Bet Command Failure - " + payload);
 });

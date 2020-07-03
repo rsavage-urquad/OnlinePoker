@@ -326,6 +326,9 @@ PlayerApp.prototype.getPlayerCardAreaName = function(playerIdx) {
 
     // Find My Index
     var MyIdx = _.findIndex(this.playerList, function(player) { return player.name == realThis.myName; });
+    if (playerIdx === MyIdx) {
+        return "playerCards";
+    }
 
     // Determine Area Id
     // - If Player Idx is greater than mine, the Id is the difference from their idx to mine.

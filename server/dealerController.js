@@ -89,7 +89,7 @@ class DealerController {
      * @param {Object} payload - Information pertaining to message. 
      */
     processBetInitiate(payload) {
-        this.gameRoom.hand.BetInitiate(payload.startPlayerName);
+        this.gameRoom.hand.betInitiate(payload.startPlayerName);
     };
 
 };
