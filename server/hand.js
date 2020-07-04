@@ -115,6 +115,37 @@ class Hand {
     };
 
     /**
+     * processBetRaise() - Handle the bettor's Bet/Raise message.
+     * @param {Object} payload - Information associated with the message.
+     */
+    processBetRaise(payload) {
+        const playerName = payload.player;
+        const raiseAmt = payload.bet;
+        const totalBetAmt = this.bet.currentBet + raiseAmt;
+        const wasRaise = (raiseAmt !== 0);      // Player did not actually raise if amount was 0
+
+        if (this.bet.currentPlayer !== playerName) {
+            emitUnexpectedEvent(`Got a message from an unexpected player - ${playerName}`);
+            return;
+        }        
+
+        // Update the bet details. 
+        let betPlayerIdx = _.findIndex(this.bet.playerBets, function(item) { return item.name === playerName; });
+        let actualBetAmt = totalBetAmt - this.bet.playerBets[betPlayerIdx].amount
+        this.bet.playerBets[betPlayerIdx].amount += actualBetAmt;
+        this.bet.currentBet += raiseAmt;
+        if (wasRaise) { this.bet.raiseCount++; }
+
+        // Update Game Room and Hand amounts for player
+        this.updatePlayerAmount(playerName, actualBetAmt);
+
+        // Refresh display for player amounts and and pass bet to the appropriate player.
+        this.socketController.broadcastPlayerList(this.gameRoom.room);
+        this.displayHandPlayerArea();        
+        this.sendNextBetMessage(wasRaise);
+    };
+
+    /**
      * processFold() - Handles the bettor's Fold message
      * @param {object} payload - Information associated with the message.
      */
@@ -134,11 +165,11 @@ class Hand {
 
         // Send multiple messages to the Players (including Next Bet action).
         this.displayHandPlayerArea();
-        this.sendNextBetMessage();
+        this.sendNextBetMessage(false);
     }
 
     // ************************************************************************************************
-    // Communications Methods
+    // Communications Methods (Interact with Players)
     // ************************************************************************************************
 
     /**
@@ -176,10 +207,6 @@ class Hand {
         this.socketController.betCommandFailure(msg);
     };
     
-    // ************************************************************************************************
-    // Display Methods
-    // ************************************************************************************************
-
     /**
      * displayHandInfo() - Send the Hand Information to the Room (initial send for Hand).
      */
@@ -270,9 +297,10 @@ class Hand {
     /**
      * sendNextBetMessage() - Advance the Bettor and send the next Bet message 
      * (either to next Bettor or Dealer, if betting completed).
+     * @param {boolean} playerRaised - Did player raise? 
      */
-    sendNextBetMessage() {
-        this.bet.advanceBettingPlayer();
+    sendNextBetMessage(playerRaised) {
+        this.bet.advanceBettingPlayer(playerRaised);
 
         // If betting is completed, inform dealer to continue.
         if (this.bet.bettingEnded) {
@@ -290,9 +318,21 @@ class Hand {
     sendPlayersCardsToMuck(playerIdx) {
         const realThis = this;
         _.forEach(this.playerCards[playerIdx].cards, function(item) {
-            realThis.deck.muck.push(item);
-        })
+            realThis.deck.addToMuck(item);
+        });
         this.playerCards[playerIdx].cards = [];
+    };
+
+    /**
+     * updatePlayerAmount() - Updates the Player's Amount for both Room & Hand.
+     * @param {string} playerName - Player's name.
+     * @param {string} bet - Bet amount 
+     */
+    updatePlayerAmount(playerName, bet) {
+        const handPlayerIdx = this.getHandPlayerIdx(playerName);
+        const gameRoomPlayerIdx = this.gameRoom.getPlayerIdx(playerName);
+        this.gameRoom.players[gameRoomPlayerIdx].amount -= bet;
+        this.players[handPlayerIdx].amount += bet;
     };
 };
 

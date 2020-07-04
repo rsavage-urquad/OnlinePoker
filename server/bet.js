@@ -41,9 +41,15 @@ class Bet {
     /**
      * advanceBettingPlayer() - Advance the "currentPlayer" to the next active player.  If 
      * the next active player is the "Stop" player, set the betting ended flag.
+     * @param {boolean} playerRaised - Did player raise?
      */
-    advanceBettingPlayer() {
+    advanceBettingPlayer(playerRaised) {
         let playerIdx = this.getPlayerIdx(this.currentPlayer);
+
+        if (playerRaised) {
+            this.stopPlayer = this.currentPlayer;
+        }        
+        
         playerIdx = this.getNextActivePlayer(playerIdx);
         this.currentPlayer = this.playerBets[playerIdx].name;
         this.bettingEnded = (this.currentPlayer === this.stopPlayer);

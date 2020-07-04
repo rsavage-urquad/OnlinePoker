@@ -337,6 +337,34 @@
       </div>
     </div> <!-- Hand Setup Dialog-->
 
+    <!-- Bet/Raise Dialog -->
+    <div class="modal" tabindex="-1" role="dialog" id="betDialog">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Bet/Raise</h5>
+          </div>
+          <div class="modal-body">
+            <div class="row row-padding">
+              <div class="col-md-12">Current bet: <span id="betCurrent"></span></div>
+            </div>
+            <div class="row row-padding">
+              <div class="col-md-12"><span id="betRaiseText"></span>: <span id="betRaiseAmt"></span></div>
+            </div>
+            <div class="row row-padding">
+              <div class="col-md-12 align-center">
+                <span id="betChips" class="margin-right"></span>
+                <button id="betResetButton" type="button" class="btn btn-outline-warning">Reset</button>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button id="betSubmitButton" type="button" class="btn btn-primary">Submit</button>
+          </div>
+        </div>
+      </div>
+    </div> <!-- Bet/Raise Dialog-->
+
   </div> <!-- Main Container -->
 
 </body>

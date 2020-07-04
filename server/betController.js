@@ -22,6 +22,9 @@ class BetController {
             case "Fold":
                 this.processFold(payload);
                 break;
+            case "BetRaise":
+                this.processBetRaise(payload);
+                break;    
             default:
                 this.socketController.betCommandFailure(`Unknown Command - ${command}`);                
                 return;
@@ -37,6 +40,18 @@ class BetController {
             return;
         }
         this.gameRoom.hand.processBetCheck(payload);
+    };
+
+    /**
+     * processBetRaise() - Process the "BetRaise" message by validating it and
+     * passing it to the Hand object to process.
+     * @param {Object} payload - Data pertaining to the message. 
+     */
+    processBetRaise(payload) {
+        if (!this.validatePayload(payload)) {
+            return;
+        }
+        this.gameRoom.hand.processBetRaise(payload);
     };
 
     /**

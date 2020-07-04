@@ -2,9 +2,6 @@
 
 This project is an attempt to create a multi-room multiplayer application to allow users to play poker.  A "Game Room" can host a Poker game for up to 7 players and will support dealing and betting.  At this time it is not intended to include computer controlled players.
 
-Note that this system does not
-currently support common cards (like Texas Holdem) or card passing games.
-
 ## Status
 
 ### Host Interface
@@ -24,7 +21,7 @@ currently support common cards (like Texas Holdem) or card passing games.
 | Dealing - Passing Cards | *Future* |
 | Dealing - Common Cards (Texas Holdem) | *Future* |
 | Card Display | *Working* |
-| Betting Initiation | *WIP* |
+| Betting Initiation | *Partial* |
 | Hand Disposition | *Future* |
 
 ### Betting
@@ -32,8 +29,8 @@ currently support common cards (like Texas Holdem) or card passing games.
 | Topic | Status |
 | --- | :---: |
 | Check | *Working* |
-| Call | *WIP* |
-| Bet/Raise | *WIP* |
+| Call | *Partial (WIP)* |
+| Bet/Raise | *Working* |
 | Fold | *Working* |
 
 ## Environment Details

@@ -59,6 +59,15 @@ class Deck {
         return this.deck.length;
     }
 
+    /**
+     * addToMuck() - Adds a card to the muck. 
+     * @param {Object} card - Card to be added. 
+     */
+    addToMuck(card) {
+        this.muck.push(card);
+    }
+
+
 };
 
 module.exports = Deck;

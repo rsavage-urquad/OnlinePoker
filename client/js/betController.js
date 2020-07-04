@@ -3,7 +3,9 @@
  */
 var BetController = function(parent) {
     this.playerApp = parent;
+    this.domHelpers = new DomHelpers();
     this.currentPayload = {};
+    this.currentBet = 0;
     this.initialize();
 } 
 
@@ -40,9 +42,44 @@ BetController.prototype.setupEvents = function () {
     $("#betCheck").click({obj: this}, this.betCheckClicked);
     $("#betCall").click({obj: this}, this.betCallClicked);
     $("#betBetRaise").click({obj: this}, this.betBetRaiseClicked);
-    $("#betFold").click({obj: this}, this.betFold);
+    $("#betFold").click({obj: this}, this.betFoldClicked);
+    this.setupBetDialog();
 };
 
+/**
+ * setupBetDialog() - Set up the Bet Dialog information, including the button,
+ * chips and events handlers
+ */
+BetController.prototype.setupBetDialog = function() {
+    // TODO: (Future) - Get Chip Values and Amounts from Server.
+    var betValues = [
+        {"backColor": "white", "textColor": "black", "value": 0.25 },
+        {"backColor": "black", "textColor": "white", "value": 0.5 },
+        {"backColor": "darkred", "textColor": "white", "value": 1 },
+        {"backColor": "darkblue", "textColor": "white", "value": 2 }
+    ];
+
+    var betChipsObj = $("#betChips");
+    var chip;
+
+    // Build Chip Buttons
+    betChipsObj.empty();
+    for (var i = 0; i < betValues.length; i++) {
+        chip = this.domHelpers.buildDomObj("button", "btn btn-lg bet-chip", accounting.formatMoney(betValues[i].value), false, false);
+        chip.css( "background-color", betValues[i].backColor);
+        chip.css( "color", betValues[i].textColor);
+        chip.click({obj: this, chipValue: betValues[i].value}, this.betIncrementAmount);
+        betChipsObj.append(chip);
+    }
+
+    // Reset any event handlers
+    $("#betResetButton").unbind();
+    $("#betSubmitButton").unbind();
+ 
+    // Set Button Click Events
+    $("#betResetButton").click({obj: this}, this.betResetClicked);
+    $("#betSubmitButton").click({obj: this}, this.betSubmitClicked);    
+};
 
 // ************************************************************************************************
 // Events Section
@@ -55,39 +92,92 @@ BetController.prototype.setupEvents = function () {
  */
 BetController.prototype.betCheckClicked = function(event) {
     var objThis = event.data.obj;
-    var payload = objThis.initializePayload()
+    var respPayload = objThis.preparePayload();
 
-    objThis.sendBetCommand("Check", payload);
+    objThis.sendBetCommand("Check", respPayload);
     objThis.hideBetCommands();
-};
-
-BetController.prototype.betCallClicked= function(event) {
-    var objThis = event.data.obj;
-    var payload = objThis.initializePayload()
-
-    // TODO: Implement betCallClicked
-    console.log("betCallClicked");
-};
-
-BetController.prototype.betBetRaiseClicked= function(event) {
-    var objThis = event.data.obj;
-    var payload = objThis.initializePayload()
-
-    // TODO: Implement betBetRaiseClicked
-    console.log("betBetRaiseClicked");    
 };
 
 /**
- * betFold() - Handles the Check clicked event by sending the message 
+ * betCallClicked() - Handles the Call clicked event by sending the appropriate 
+ * information to the server.
+ * @param {Object} event - Object associated with triggered Event.
+ */
+BetController.prototype.betCallClicked = function(event) {
+    var objThis = event.data.obj;
+    var checkPayload = { data: { obj: objThis }};
+
+    // TODO: (Left Off Here) -- Check/Raise not working correctly  Need to verify on second round of betting.
+
+    objThis.currentBet = 0;
+    objThis.betSubmitClicked(checkPayload);
+};
+
+/**
+ * betBetRaiseClicked() 0 Handles the Bet/Raise clicked event by preparing and
+ * displaying the Bet/Raise dialog.
+ * @param {Object} event - Object associated with triggered Event.
+ */
+BetController.prototype.betBetRaiseClicked = function(event) {
+    var objThis = event.data.obj;
+    var betCurrentObj = $("#betCurrent");
+
+    betCurrentObj.text(accounting.formatMoney(objThis.currentPayload.currentBet));
+    objThis.currentBet = 0;
+    objThis.setBetRaiseText(objThis.currentBet, objThis.currentPayload.currentBet);
+    $("#betDialog").show();
+};
+
+/**
+ * betFoldClicked() - Handles the Check clicked event by sending the message 
  * to the server.
  * @param {Object} event - Object associated with triggered Event.
  */
-BetController.prototype.betFold= function(event) {
+BetController.prototype.betFoldClicked = function(event) {
     var objThis = event.data.obj;
-    var payload = objThis.initializePayload()
+    var respPayload = objThis.preparePayload();
 
-    objThis.sendBetCommand("Fold",  payload);
+    objThis.sendBetCommand("Fold",  respPayload);
     objThis.hideBetCommands();
+};
+
+/**
+ * betIncrementAmount() - Handles the Chip button click by updating current bet 
+ * and player message.
+ * @param {Object} event - Object associated with triggered Event. 
+ */
+BetController.prototype.betIncrementAmount = function(event) {
+    var objThis = event.data.obj;
+    var chipValue = event.data.chipValue;
+        
+    objThis.currentBet += chipValue;
+    objThis.setBetRaiseText(objThis.currentBet, objThis.currentPayload.currentBet);
+};
+
+/**
+ * beResetClicked() - Resets the current Bet amount
+ * @param {Object} event - Object associated with triggered Event. 
+ */
+BetController.prototype.betResetClicked = function(event) {
+    var objThis = event.data.obj;
+
+    objThis.currentBet = 0;
+    objThis.setBetRaiseText(objThis.currentBet, objThis.currentPayload.currentBet);
+};
+
+/**
+ * betSubmitClicked() - Handles the Bet/Raise Submit click event by preparing
+ * and sending the response to the server.
+ * @param {Object} event - Object associated with triggered Event. 
+ */
+BetController.prototype.betSubmitClicked = function(event) {
+    var objThis = event.data.obj;
+    var respPayload = objThis.preparePayload();
+    respPayload.bet = objThis.currentBet;
+
+    objThis.sendBetCommand("BetRaise",  respPayload);
+    $("#betDialog").hide();
+    objThis.hideBetCommands();    
 };
 
 
@@ -137,7 +227,11 @@ BetController.prototype.enableBetting = function(payload) {
         checkBtnObj.hide();
 
         // Set Call text and show button
-        callBtnObj.text("Call - " + accounting.formatMoney(payload.currentBet));
+        var callButtonText = "Call - " + accounting.formatMoney(payload.currentBet)
+        if (payload.prevBetSum > 0) {
+            callButtonText += " (" + accounting.formatMoney(payload.currentBet - payload.prevBetSum) + ")";
+        }
+        callBtnObj.text(callButtonText);
         callBtnObj.show();
     }
     else {
@@ -158,6 +252,26 @@ BetController.prototype.enableBetting = function(payload) {
     $("#betArea").show();
 };
 
+/**
+ * setBetRaiseText() - Sets the Bet/Raise text in the Bet/Raise dialog to
+ * inform the player of the current bet status.
+ * @param {number} currBet - Current Bet
+ * @param {number} prevBet - Previous Bet amount
+ */
+BetController.prototype.setBetRaiseText = function(currBet, prevBet) {
+    var betRaiseTextObj = $("#betRaiseText");
+    var betRaiseText;
+    betRaiseText = (prevBet === 0) ? "Bet " : "Raise";
+    betRaiseText += accounting.formatMoney(currBet);
+    
+    if (prevBet > 0) {
+        betRaiseText += " to " + accounting.formatMoney(prevBet + currBet);
+    }
+    
+    betRaiseTextObj.text(betRaiseText);
+}
+
+
 // ************************************************************************************************
 // Helpers Section
 // ************************************************************************************************
@@ -165,9 +279,9 @@ BetController.prototype.enableBetting = function(payload) {
 /**
  * initializePayload() - Initialize the Payload information.
  */
-BetController.prototype.initializePayload = function() {
+BetController.prototype.preparePayload = function() {
     return {
-        "socketId": this.playerApp.mySocketId, 
-        "player": this.playerApp.myName 
+        "player": this.playerApp.myName,
+        "socketId": this.playerApp.mySocketId
     };
 };

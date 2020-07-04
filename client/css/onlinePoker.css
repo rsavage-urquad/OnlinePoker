@@ -81,6 +81,10 @@
     padding-top: 20px;
 }
 
+.align-center {
+    text-align: center;
+}
+
 .align-right {
     text-align: right;
 }
@@ -118,8 +122,16 @@
     margin-bottom: 2px;
 }
 
+.margin-right {
+    margin-right: 10px;;
+}
+
 .row-padding {
     padding-bottom: 4px;
+}
+
+.row-padding-top {
+    padding-top: 8px;
 }
 
 .card-container {
@@ -132,4 +144,12 @@
 
 .init-bet-command {
     display: none;
+}
+
+.bet-chip {
+    border: 1px solid black;
+    font-size: xx-small;
+    border-radius: 50%;
+    margin-left: 8px;
+    padding: 8px 3px;
 }

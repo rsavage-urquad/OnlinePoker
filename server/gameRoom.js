@@ -7,7 +7,7 @@ class GameRoom {
         this.anteMode = "player";   
         this.defaultAnte = .50;     // TODO: defaultAnte (Host Commands)
         this.chipValues = [];       // TODO: chipValues (Host Commands)
-        this.maxRaise = 3;          // TODO: maxRaise (Host Commands)
+        this.maxRaise = 4;          // TODO: maxRaise (Host Commands)
         this.hand = {};
     }
 
