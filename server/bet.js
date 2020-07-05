@@ -46,6 +46,9 @@ class Bet {
     advanceBettingPlayer(playerRaised) {
         let playerIdx = this.getPlayerIdx(this.currentPlayer);
 
+        // If Current Player is the Stop Player, and they chose to Fold, set an flag to set a new Stop Player
+        let stopPlayerFoldedCheck = ((this.currentPlayer === this.stopPlayer) && (this.playerBets[playerIdx].fold));
+
         if (playerRaised) {
             this.stopPlayer = this.currentPlayer;
         }        
@@ -53,6 +56,20 @@ class Bet {
         playerIdx = this.getNextActivePlayer(playerIdx);
         this.currentPlayer = this.playerBets[playerIdx].name;
         this.bettingEnded = (this.currentPlayer === this.stopPlayer);
+
+        if (stopPlayerFoldedCheck) {
+            // Set new Stop Player
+            this.stopPlayer = this.currentPlayer;
+        }
+    };
+
+    /**
+     * setBetPlayerFold() - Sets the Player to Fold in the playersBet array.
+     * @param {string} playerName - Player's Name to set. 
+     */
+    setBetPlayerFold(playerName) {
+        const playerIdx = this.getPlayerIdx(playerName);
+        this.playerBets[playerIdx].fold = true;
     };
 
     // ************************************************************************************************
@@ -93,6 +110,7 @@ class Bet {
     
         // If safety check triggered, make current player next.
         if ((safety >= playersLength)) {
+            console.log("Safety triggered - getNextActivePlayer");
             playerIdx = initialPlayerIdx;
         }
     

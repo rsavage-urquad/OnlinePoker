@@ -101,7 +101,7 @@ socket.on("dealActionCompleted", function(payload) {
  * "dealerCommandFailure" event - Displays the error message from the server.
  */
 socket.on("dealerCommandFailure", function(payload) {
-    // TODO: Implement "dealerCommandFailure" processing
+    // TODO: (Cleanup) Implement "dealerCommandFailure" processing
     console.log("Dealer Command Failure - " + payload);
 });
 
@@ -124,6 +124,15 @@ socket.on("betRequest", function(payload) {
  * "betCommandFailure" event - Displays the error message from the server.
  */
 socket.on("betCommandFailure", function(payload) {
-    // TODO: Implement "betCommandFailure" processing
+    // TODO: (Cleanup) Implement "betCommandFailure" processing
     console.log("Bet Command Failure - " + payload);
+});
+
+// ************************************************************************************************
+// End Hand Section
+// ************************************************************************************************
+
+
+socket.on("showAllHands", function(payload) {
+    playerApp.hand.showAllHands(payload);
 });

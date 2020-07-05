@@ -107,8 +107,6 @@ BetController.prototype.betCallClicked = function(event) {
     var objThis = event.data.obj;
     var checkPayload = { data: { obj: objThis }};
 
-    // TODO: (Left Off Here) -- Check/Raise not working correctly  Need to verify on second round of betting.
-
     objThis.currentBet = 0;
     objThis.betSubmitClicked(checkPayload);
 };
@@ -227,9 +225,9 @@ BetController.prototype.enableBetting = function(payload) {
         checkBtnObj.hide();
 
         // Set Call text and show button
-        var callButtonText = "Call - " + accounting.formatMoney(payload.currentBet)
+        var callButtonText = "Call " + accounting.formatMoney(payload.currentBet - payload.prevBetSum)
         if (payload.prevBetSum > 0) {
-            callButtonText += " (" + accounting.formatMoney(payload.currentBet - payload.prevBetSum) + ")";
+            callButtonText += " (to " + accounting.formatMoney(payload.currentBet) + ")";
         }
         callBtnObj.text(callButtonText);
         callBtnObj.show();

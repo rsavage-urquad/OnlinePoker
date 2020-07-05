@@ -157,7 +157,8 @@ class Hand {
         }
 
         // Mark Player as Folded
-        const playerIdx = this.getHandPlayerIdx(playerName)
+        this.bet.setBetPlayerFold(playerName);
+        const playerIdx = this.getHandPlayerIdx(playerName);
         this.players[playerIdx].fold = true;
         
         // Clear Player's Cards (send to Muck)
@@ -166,7 +167,8 @@ class Hand {
         // Send multiple messages to the Players (including Next Bet action).
         this.displayHandPlayerArea();
         this.sendNextBetMessage(false);
-    }
+    };
+
 
     // ************************************************************************************************
     // Communications Methods (Interact with Players)
@@ -268,6 +270,31 @@ class Hand {
                 }
             );            
         }
+    };
+
+    /**
+     * emitShowAllHands() - Sends all Active Players Hand information to the Room.
+     */
+    emitShowAllHands() {
+        const realThis = this;
+        let payload = { "hands": [] };
+
+        _.forEach(this.gameRoom.players, function(player, idx) {
+            if (!player.fold) {
+                let cards = [];
+                _.forEach(realThis.playerCards[idx].cards, function(card) {
+                    card.faceUp = true;
+                    cards.push(card);                  
+                });
+                payload.hands.push({ "name": player.name, "cards": cards });
+            }
+        });
+
+        this.socketController.emitToRoom(
+            this.gameRoom.room, 
+            "showAllHands",
+            payload
+        );
     };
 
 

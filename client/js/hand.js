@@ -207,6 +207,29 @@ Hand.prototype.displayHandCardsForPlayer = function(playerIdx, isMyPlayer) {
     });
 };
 
+/**
+ * showAllHands() - Displays the cards for all active players.
+ * @param {Object} payload - Contains arrays of all cards for all players. 
+ */
+Hand.prototype.showAllHands = function(payload) {
+    var realThis = this;
+    var playerIdx;
+    var card;
+
+    // Display each player's hand.
+    _.forEach(payload.hands, function(hand) {
+        playerIdx = realThis.getIdxOfPlayerName(hand.name);
+        realThis.hands[playerIdx].cards = [];
+        // Populate cards received from server
+        _.forEach(hand.cards, function(cardInfo) {
+            card = new Card(cardInfo.suit, cardInfo.value, cardInfo.faceUp);
+            realThis.hands[playerIdx].cards.push(card);
+        });
+
+        realThis.displayHandCardsForPlayer(playerIdx, (hand.name === realThis.playerApp.myName));
+    });
+};
+
 
 // ************************************************************************************************
 // Helpers Section
@@ -228,3 +251,13 @@ Hand.prototype.getIdxOfPlayerName = function(playerName) {
 Hand.prototype.setDealToNextIdx = function(dealToNextName) {
     this.dealToNextIdx = this.getIdxOfPlayerName(dealToNextName);
 };
+
+/**
+ * hasPlayerFolded() - Identifies if a player has folded
+ * @param {string} playerName - Player to check.
+ * @returns (boolean) - True if player has folded, otherwise false. 
+ */
+Hand.prototype.hasPlayerFolded = function(playerName) {
+    var playerIdx = this.getIdxOfPlayerName(playerName);
+    return this.players[playerIdx].fold;
+}

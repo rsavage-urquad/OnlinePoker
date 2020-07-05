@@ -62,7 +62,6 @@ class GameRoom {
         socketController.emitToRoom(this.room, "dealerSetup", { "name": dealer.name, "defaultAnte": this.defaultAnte });
     };
 
-
 };
 
 module.exports = GameRoom;

@@ -38,6 +38,7 @@ DealerController.prototype.setupEvents = function () {
     $("#initiateBettingNext").unbind();
     $("#initiateBettingSpecific").unbind();
     $("#initiateBettingCancel").unbind();
+    $("#endShowHands").unbind();
 
     // Set Button Click Events
     $("#handStartButton").click({obj: this}, this.startHandClicked);
@@ -48,6 +49,8 @@ DealerController.prototype.setupEvents = function () {
     $("#initiateBettingNext").click({obj: this}, this.initiateBettingNextClicked);
     $("#initiateBettingSpecific").click({obj: this}, this.initiateBettingSpecificClicked);
     $("#initiateBettingCancel").click({obj: this}, this.initiateBettingCancelClicked);
+    $("#endShowHands").click({obj: this}, this.endShowAllHandsClicked);
+
 };
 
 
@@ -140,22 +143,12 @@ DealerController.prototype.dealToNextClicked = function(event) {
  */
 DealerController.prototype.dealToSpecificClicked = function(event) {
     var objThis = event.data.obj;
-    var buttonObj;
 
     // Disable Dealer Commands until completion message received
     objThis.setDealerOptions("disable");       
 
     // Setup and display Select buttons
-    buttonObj = $("#selectMe");
-    buttonObj.unbind();
-    buttonObj.click({obj: objThis}, objThis.dealToSpecificSelected);
-    buttonObj.show();
-    _.forEach(objThis.playerApp.opponentNoXref, function(item) {
-        buttonObj = $("#selectPlayer-" + item.opponentNo.toString());
-        buttonObj.unbind();
-        buttonObj.click({obj: objThis}, objThis.dealToSpecificSelected);
-        buttonObj.show();
-    });
+    objThis.setupSelectButtons(objThis, objThis.dealToSpecificSelected);
 };
 
 /**
@@ -230,8 +223,18 @@ DealerController.prototype.initiateBettingNextClicked = function(event) {
     $("#initBetCommandArea").hide();
 };
 
+/**
+ * initiateBettingSpecificClicked() - Handle the Initiate Betting Specific clicked event 
+ * displaying the "Select" buttons to allow the dealer to choose.
+ * @param {*} event - Object associated with triggered Event.
+ */
 DealerController.prototype.initiateBettingSpecificClicked = function(event) {
-    // TODO: Implement initiateBettingSpecific
+    var objThis = event.data.obj;
+
+    // TODO: (Future) - Disable Initiate Buttons until selection is made?
+
+    // Setup and display Select buttons
+    objThis.setupSelectButtons(objThis, objThis.initiateBettingSpecificSelected);
 };
 
 /**
@@ -243,6 +246,37 @@ DealerController.prototype.initiateBettingCancelClicked = function(event) {
     $("#initBetCommandArea").hide();
     $("#dealerCommandArea").show();
 }
+
+/**
+ * initiateBettingSpecificSelected() - Handle the "Select" button click event when initiating the 
+ * Bet for a specific player.
+ * @param {Object} event - Object associated with triggered Event.
+ */
+DealerController.prototype.initiateBettingSpecificSelected = function(event) {
+    var objThis = event.data.obj;
+    var command = "BetInitiate";
+    var payload = {};
+
+    $(".select-player").hide();
+
+    // Prepare and send command
+    payload.startPlayerName = this.value;
+    objThis.sendDealerCommand(command, payload);
+
+    // Hide Initiate Betting Commands
+    $("#initBetCommandArea").hide();
+}
+
+/**
+ * endShowAllHandsClicked() - Handle the "Show All Hands" button click event by sending 
+ * a message to the server.
+ * @param {Object} event - Object associated with triggered Event.
+ */
+DealerController.prototype.endShowAllHandsClicked = function(event) {
+    var objThis = event.data.obj;
+    objThis.sendDealerCommand("EndShowAllHands", {});
+};
+
 
 // ************************************************************************************************
 // Data Activities Section
@@ -318,6 +352,33 @@ DealerController.prototype.setDealerOptions = function(mode) {
         domElements.prop("disabled", isDisable);
     });
 };
+
+/**
+ * setupSelectButtons() - Display the "Select" buttons for player specific processing
+ * @param {Object} objThis - "this" reference
+ * @param {*} callback - Function to call on click.
+ */
+DealerController.prototype.setupSelectButtons = function(objThis, callback) {
+    buttonObj = $("#selectMe");
+    buttonObj.unbind();
+    // Do not display if player is folded.
+    if (!objThis.playerApp.hand.hasPlayerFolded(objThis.playerApp.myName)) {
+        buttonObj.click({obj: objThis}, callback);
+        buttonObj.show();
+    }
+
+    _.forEach(objThis.playerApp.opponentNoXref, function(item) {
+        buttonObj = $("#selectPlayer-" + item.opponentNo.toString());
+        buttonObj.unbind();
+
+        // Do not display if player is folded.
+        if (!objThis.playerApp.hand.hasPlayerFolded(item.name)) {
+            buttonObj.click({obj: objThis}, callback);
+            buttonObj.show();
+        }
+    });    
+};
+
 
 // ************************************************************************************************
 // Helpers Section
@@ -399,6 +460,7 @@ DealerController.prototype.getNextActivePlayer = function(startIdx) {
 
     // If safety check triggered, make current player next.
     if ((safety >= playersLength)) {
+        console.log("Safety issue occurred - getNextActivePlayer");
         playerIdx = initialPlayerIdx;
     }
 

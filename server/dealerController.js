@@ -28,6 +28,10 @@ class DealerController {
             case "BetInitiate":
                 this.processBetInitiate(payload);
                 break;
+            case "EndShowAllHands":
+                this.processShowAllHands();
+                break;
+                
             default:
                 this.socketController.dealerCommandFailure(`Unknown Command - ${command}`);                
                 return;
@@ -91,6 +95,14 @@ class DealerController {
     processBetInitiate(payload) {
         this.gameRoom.hand.betInitiate(payload.startPlayerName);
     };
+
+    /**
+     * processShowAllHands() - Process the Show All Hands message by passing it
+     * to the Hand object.
+     */
+    processShowAllHands() {
+        this.gameRoom.hand.emitShowAllHands();
+    }
 
 };
 
