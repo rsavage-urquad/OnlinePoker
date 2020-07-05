@@ -21,7 +21,8 @@ This project is an attempt to create a multi-room multiplayer application to all
 | Dealing - Passing Cards | *Future* |
 | Dealing - Common Cards (Texas Holdem) | *Future* |
 | Card Display | *Working* |
-| Betting Initiation | *Partial* |
+| Betting Initiation | *Working* |
+| Show All Hands | *Working* |
 | Hand Disposition | *Future* |
 
 ### Betting
@@ -29,7 +30,7 @@ This project is an attempt to create a multi-room multiplayer application to all
 | Topic | Status |
 | --- | :---: |
 | Check | *Working* |
-| Call | *Partial (WIP)* |
+| Call | *Working* |
 | Bet/Raise | *Working* |
 | Fold | *Working* |
 
