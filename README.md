@@ -23,7 +23,7 @@ This project is an attempt to create a multi-room multiplayer application to all
 | Card Display | *Working* |
 | Betting Initiation | *Working* |
 | Show All Hands | *Working* |
-| Hand Disposition | *Future* |
+| Display Card Counts | *Working* |
 
 ### Betting
 
@@ -33,6 +33,14 @@ This project is an attempt to create a multi-room multiplayer application to all
 | Call | *Working* |
 | Bet/Raise | *Working* |
 | Fold | *Working* |
+
+### Hand Disposition
+
+| Topic | Status |
+| --- | :---: |
+| Display Hands | *Working but may change* |
+| Payout | *Future* |
+| Pass the Deal | *Future* |
 
 ## Environment Details
 

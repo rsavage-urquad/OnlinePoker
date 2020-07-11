@@ -165,6 +165,7 @@ class Hand {
         this.sendPlayersCardsToMuck(playerIdx);
 
         // Send multiple messages to the Players (including Next Bet action).
+        this.sendDeckStats();
         this.displayHandPlayerArea();
         this.sendNextBetMessage(false);
     };
@@ -270,6 +271,8 @@ class Hand {
                 }
             );            
         }
+
+        this.sendDeckStats();
     };
 
     /**
@@ -297,6 +300,19 @@ class Hand {
         );
     };
 
+    /**
+     * sendDeckStats() - Sends the Desk Statistics to the table.
+     */
+    sendDeckStats() {
+        let deckStats = `Deck: ${this.deck.deck.length} - Muck: ${this.deck.muck.length}`;
+        let payload = { "deckStats": deckStats };
+
+        this.socketController.emitToRoom(
+            this.gameRoom.room, 
+            "deckStats",
+            payload
+        );        
+    }
 
     // ************************************************************************************************
     // Helper Methods

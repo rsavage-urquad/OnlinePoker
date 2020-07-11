@@ -98,6 +98,14 @@ Hand.prototype.updatePlayerInfo = function(payload) {
     this.displayHandPlayerInfo("handPlayerInfoArea");
 };
 
+/**
+ * deckStatsReceived() - Display the Deck cards remaining and muck count info. 
+ * @param {Object} payload - Deck Statistics
+ */
+Hand.prototype.deckStatsReceived = function(payload) {
+    $("#deckStats").text(payload.deckStats);
+};
+
 
 // ************************************************************************************************
 // Data Activities Section

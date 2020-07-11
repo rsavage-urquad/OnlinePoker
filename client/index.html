@@ -105,7 +105,7 @@
               </div>          
               <div class="col-xl-2">
                 <!-- Bet Area-->                
-                <div id="betArea">
+                <div id="betArea" class="align-right spacer">
                   <div id="betCheckDiv"><button class="btn btn-sm btn-light btn-margin" id="betCheck">Check</button></div>
                   <div id="betCallDiv"><button class="btn btn-sm btn-light btn-margin" id="betCall">Call</button></div>
                   <div id="betBetRaiseDiv"><button class="btn btn-sm btn-warning btn-margin" id="betBetRaise">Bet/Raise</button></div>
@@ -143,10 +143,13 @@
         <!-- Commands -->
         <div class="info-container">
           <div class="row">
-            <div class="col-xl-12 no-padding-lr">
+            <div class="col-xl-6 no-padding-lr">
                 <h5>Dealer Commands:</h5>
             </div>
+            <div class="col-xl-6 align-right">
+              <span id="deckStats" class="dealer-ind"></span>
           </div>
+        </div>
 
           <!-- Dealing Commands-->
           <div id="dealerCommandArea">

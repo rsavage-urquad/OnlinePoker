@@ -91,6 +91,13 @@ socket.on("dealToPlayer", function(payload) {
 });
 
 /**
+ *  "deckStats" event - Deck Statistics (Cards remaining and muck count).
+ */
+socket.on("deckStats", function(payload) {
+    playerApp.hand.deckStatsReceived(payload);
+});
+
+/**
  * "dealActionCompleted" event - Deal operation completed.
  */
 socket.on("dealActionCompleted", function(payload) {
