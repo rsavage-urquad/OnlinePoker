@@ -263,9 +263,35 @@ Hand.prototype.setDealToNextIdx = function(dealToNextName) {
 /**
  * hasPlayerFolded() - Identifies if a player has folded
  * @param {string} playerName - Player to check.
- * @returns (boolean) - True if player has folded, otherwise false. 
+ * @returns {boolean} - True if player has folded, otherwise false. 
  */
 Hand.prototype.hasPlayerFolded = function(playerName) {
     var playerIdx = this.getIdxOfPlayerName(playerName);
     return this.players[playerIdx].fold;
 }
+
+/**
+ * getPotAmount() - Gets the total amount of the pot for the current Hand.
+ * @returns {number} - Total amount of the pot.
+ */
+Hand.prototype.getPotAmount = function() {
+    return _.reduce(this.players, function(sum, player) {
+        return sum + player.amount;
+    }, 0); 
+};
+
+/**
+ * getRemainingPlayers() - Retrieves an array of the Player Names that are still 
+ * in the hand.
+ * @returns {Array} - Array of Player Names that are still in the hand
+ */
+Hand.prototype.getRemainingPlayers = function() {
+    var remaining = [];
+
+    _.forEach(this.players, function(player) {
+        if (!player.fold) {
+            remaining.push(player.name);
+        }
+    });
+    return remaining;
+};

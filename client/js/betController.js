@@ -6,6 +6,7 @@ var BetController = function(parent) {
     this.domHelpers = new DomHelpers();
     this.currentPayload = {};
     this.currentBet = 0;
+    this.betValues = [];
     this.initialize();
 } 
 
@@ -14,11 +15,25 @@ var BetController = function(parent) {
 // ************************************************************************************************
 
 /**
- * initialize() - Initialize the Host Dialog object
+ * initialize() - Initialize the Bet Dialog object
  */
 BetController.prototype.initialize = function () {
+    this.prepareBetValues();
     this.setupDom();
     this.setupEvents();
+};
+
+/**
+ * prepareBetValues() - Loads the Chip Values.  Significant changes probable. 
+ */
+BetController.prototype.prepareBetValues = function() {
+    // TODO: (Future) - Get Chip Values and Amounts from Server.
+    this.betValues = [
+        {"backColor": "white", "textColor": "black", "value": 0.25 },
+        {"backColor": "black", "textColor": "white", "value": 0.5 },
+        {"backColor": "darkred", "textColor": "white", "value": 1 },
+        {"backColor": "darkblue", "textColor": "white", "value": 2 }
+    ];
 };
 
 /**
@@ -51,24 +66,16 @@ BetController.prototype.setupEvents = function () {
  * chips and events handlers
  */
 BetController.prototype.setupBetDialog = function() {
-    // TODO: (Future) - Get Chip Values and Amounts from Server.
-    var betValues = [
-        {"backColor": "white", "textColor": "black", "value": 0.25 },
-        {"backColor": "black", "textColor": "white", "value": 0.5 },
-        {"backColor": "darkred", "textColor": "white", "value": 1 },
-        {"backColor": "darkblue", "textColor": "white", "value": 2 }
-    ];
-
     var betChipsObj = $("#betChips");
     var chip;
 
     // Build Chip Buttons
     betChipsObj.empty();
-    for (var i = 0; i < betValues.length; i++) {
-        chip = this.domHelpers.buildDomObj("button", "btn btn-lg bet-chip", accounting.formatMoney(betValues[i].value), false, false);
-        chip.css( "background-color", betValues[i].backColor);
-        chip.css( "color", betValues[i].textColor);
-        chip.click({obj: this, chipValue: betValues[i].value}, this.betIncrementAmount);
+    for (var i = 0; i < this.betValues.length; i++) {
+        chip = this.domHelpers.buildDomObj("button", "btn btn-lg bet-chip", accounting.formatMoney(this.betValues[i].value), false, false);
+        chip.css( "background-color", this.betValues[i].backColor);
+        chip.css( "color", this.betValues[i].textColor);
+        chip.click({obj: this, chipValue: this.betValues[i].value}, this.betIncrementAmount);
         betChipsObj.append(chip);
     }
 
@@ -282,4 +289,14 @@ BetController.prototype.preparePayload = function() {
         "player": this.playerApp.myName,
         "socketId": this.playerApp.mySocketId
     };
+};
+
+/**
+ * getMinChipValue() - retrieves the minimum chip value.
+ * @returns {number} - Minimum chip value.
+ */
+BetController.prototype.getMinChipValue = function() {
+    return _.reduce(this.betValues, function(min, chip) {
+            return (chip.value < min) ? chip.value : min;
+        }, Number.MAX_VALUE);
 };

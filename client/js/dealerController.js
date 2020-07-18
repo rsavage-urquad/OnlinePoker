@@ -39,6 +39,7 @@ DealerController.prototype.setupEvents = function () {
     $("#initiateBettingSpecific").unbind();
     $("#initiateBettingCancel").unbind();
     $("#endShowHands").unbind();
+    $("#endHand").unbind();
 
     // Set Button Click Events
     $("#handStartButton").click({obj: this}, this.startHandClicked);
@@ -50,7 +51,7 @@ DealerController.prototype.setupEvents = function () {
     $("#initiateBettingSpecific").click({obj: this}, this.initiateBettingSpecificClicked);
     $("#initiateBettingCancel").click({obj: this}, this.initiateBettingCancelClicked);
     $("#endShowHands").click({obj: this}, this.endShowAllHandsClicked);
-
+    $("#endHand").click({obj: this}, this.endHandClicked);
 };
 
 
@@ -275,6 +276,20 @@ DealerController.prototype.initiateBettingSpecificSelected = function(event) {
 DealerController.prototype.endShowAllHandsClicked = function(event) {
     var objThis = event.data.obj;
     objThis.sendDealerCommand("EndShowAllHands", {});
+};
+
+/**
+ * endHandClicked() - Handle the "End Hand" button click event by calling the Payout 
+ * Controller. 
+ * @param {Object} event - Object associated with triggered Event. 
+ */
+DealerController.prototype.endHandClicked = function(event) {
+    var objThis = event.data.obj;
+    var remainingPlayers = objThis.playerApp.hand.getRemainingPlayers();
+    var potAmount = objThis.playerApp.hand.getPotAmount();
+    var minChipValue = objThis.playerApp.betController.getMinChipValue();
+
+    objThis.playerApp.payoutController.preparePayoutDialog(remainingPlayers, potAmount, minChipValue);
 };
 
 

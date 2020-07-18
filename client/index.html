@@ -241,7 +241,7 @@
 
     <!-- Host Dialog -->
     <div class="modal" tabindex="-1" role="dialog" id="hostDialog">
-      <div class="modal-dialog modal-dialog-centered modal-xl " role="document">
+      <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">Host Commands</h5>
@@ -369,6 +369,40 @@
       </div>
     </div> <!-- Bet/Raise Dialog-->
 
+    <!-- Payout Dialog -->
+    <div class="modal" tabindex="-1" role="dialog" id="payoutDialog">
+      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Payout</h5>
+          </div>
+          <div class="modal-body">
+            <input id="payoutWinnerCount" type="hidden">
+            <div class="row row-padding form-group row">
+              <div class="col-md-3">Winner(s):</div>
+              <div class="col-md-7 align-center">
+                <select id="payoutWinnerSelectList" class="form-control">
+                  <option value="">--Please choose an option--</option> <!-- Place holder-->
+                </select>
+              </div>
+              <div class="col-md-2"><button id="payoutWinnerSelect" type="button" class="btn btn-primary">Select</button></div>
+            </div>
+            <div id="payoutArea"></div>
+            <div class="row row-padding">
+              <div class="col-md-12">Amount Remaining - <span id="payoutAmountRemaining"></span></div>
+            </div>
+            <div class="row row-padding">
+              <div class="col-md-12"><span id="payoutMsg" class="errorText"></span></div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button id="payoutSubmit" type="button" class="btn btn-primary">Submit</button>
+            <button id="payoutCancel" type="button" class="btn btn-warning">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div> <!-- Payout Dialog-->
+
   </div> <!-- Main Container -->
 
 </body>
@@ -385,6 +419,7 @@
 <script src="./client/js/hostDialog.js"></script>
 <script src="./client/js/dealerController.js"></script>
 <script src="./client/js/betController.js"></script>
+<script src="./client/js/payoutController.js"></script>
 <script src="./client/js/HandPlayer.js"></script>
 <script src="./client/js/Hand.js"></script>
 <script src="./client/js/Card.js"></script>

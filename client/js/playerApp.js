@@ -14,6 +14,7 @@ var PlayerApp = function() {
     this.hostDialog = new HostDialog(this);
     this.dealerController = new DealerController(this);
     this.betController = new BetController(this);
+    this.payoutController = new PayoutController(this);
     this.domHelpers = new DomHelpers();
     this.socket = socket;  
     this.playerList = [];
