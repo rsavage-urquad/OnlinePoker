@@ -138,13 +138,13 @@ DomHelpers.prototype.buildButton = function (buttonClass, buttonType, iClass, bu
 /**
  * buildInput() - Builds an "input" tag for the provided parameters.
  * @param {string} type - Type of input
- * @param {string} name - Name of input 
  * @param {string} id - Id of input
+ * @param {string} name - Name of input 
  * @param {string} className - Class to apply to input element
  * @param {string} value - Value of input element
  * @returns {*|jQuery|HTMLElement} - "<input>" element.
  */
-DomHelpers.prototype.buildInput = function (type, name, id, className, value) {
+DomHelpers.prototype.buildInput = function (type,  id, name,className, value) {
     var input = $("<input>", { "type": type, "id": id, "name": name });
 
     // Set class (if provided)
