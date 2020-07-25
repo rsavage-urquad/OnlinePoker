@@ -99,7 +99,11 @@ PayoutController.prototype.payoutSubmitClicked = function(event) {
     var objThis = event.data.obj;    
 
     objThis.setPayoutMsg("");
-
+    if (msg !== "") {
+        objThis.setPayoutMsg(msg); 
+        return;      
+    }
+    
     // TODO: Format the Payout Message and send to Server
     // TODO: Server must respond with results, then "Pass the deal or not" options must be presented to dealer
 
@@ -128,7 +132,10 @@ PayoutController.prototype.payoutSplitChanged = function(event) {
     // Update the winner collection objects
     objThis.updateWinnersFromForm();
     objThis.recomputeSplits();
-    objThis.checkForAmountErrors();
+    var msg = objThis.checkForAmountErrors();
+    if (msg !== "") {
+        objThis.setPayoutMsg(msg);       
+    }
 
     // Update Amount in DOM.
     objThis.unbindChangeEvents();
@@ -139,12 +146,36 @@ PayoutController.prototype.payoutSplitChanged = function(event) {
     objThis.updateAmountRemaining();
 };
 
+/**
+ * payoutAmountChanged() - Handles the winner Amount changed event by validating the
+ * amount and, if valid, updating the Payout details.
+ * @param {Object} event - Object associated with triggered Event.
+ */
 PayoutController.prototype.payoutAmountChanged = function(event) {
     var objThis = event.data.obj; 
+    var amount = event.target.value;
+    var id = event.target.id
+
     objThis.setPayoutMsg("");
-   
-    // TODO:Implement payoutAmountChanged
-    console.log("payoutAmount Changed")    
+    objThis.resetAmountDecorations();
+
+    // Validate Amount.
+    var valResult = objThis.validateAmount(amount, objThis.totalPayoutAmount, objThis.minChipValue);
+    if (valResult !== "") {
+        $("#" + id).addClass("errorInput");
+        objThis.setPayoutMsg(valResult);
+        return;
+    }
+
+    // Update the winner collection objects  
+    objThis.updateWinnersFromForm();
+    var msg = objThis.checkForAmountErrors();
+    if (msg !== "") {
+        objThis.setPayoutMsg(msg);       
+    }
+    
+    // Update Amount Remaining
+    objThis.updateAmountRemaining();    
 };
 
 
@@ -229,8 +260,13 @@ PayoutController.prototype.displayWinnersDomArea = function() {
     this.bindChangeEvents();
 };
 
+/**
+ * updateFormAmounts() - Update the amount fields in the Payout form
+ */
 PayoutController.prototype.updateFormAmounts = function() {
-    // TODO: Implement updateFormAmounts
+    _.forEach(this.winners, function(winner, idx) {
+        $("#winnerAmt-" + idx.toString()).val(winner.amount);
+    });
 };
 
 /**
@@ -240,6 +276,15 @@ PayoutController.prototype.updateAmountRemaining = function() {
     $("#payoutAmountRemaining").text(accounting.formatMoney(this.payoutAmountRemaining));
 }
 
+/**
+ * resetAmountDecorations() - Remove the error class from all "winnerAmt" textboxes.
+ */
+PayoutController.prototype.resetAmountDecorations = function() {
+    var winnerCount = $("#payoutWinnerCount").val();
+    for (var i = 0; i < winnerCount; i++) {
+        $("#winnerAmt-" + i.toString()).removeClass("errorInput");
+    }
+};
 
 // ************************************************************************************************
 // Helpers Section
@@ -314,19 +359,121 @@ PayoutController.prototype.updateWinnersFromForm = function() {
         if (winnerIdx !== -1) {
             this.winners[winnerIdx].split = $("#winnerSplit-" + winnerIdxStr).val();
             testAmt = $("#winnerAmt-" + winnerIdxStr).val();
-            this.winners[winnerIdx].amount = (isNaN(testAmt)) ? Number(testAmt) : 0; 
+            this.winners[winnerIdx].amount = (isNaN(testAmt)) ? 0 : Number(testAmt); 
         }
     }
 };
 
+/**
+ * recomputeSplits() - Recomputes the Winner splits when a portion changes.
+ */
 PayoutController.prototype.recomputeSplits = function() {
-    // TODO: Implement recomputeSplits
+    var realThis = this;
+
+    _.forEach(this.winners, function(winner) {
+        if (winner.split !== "") {
+            winner.amount = realThis.computeSplitAmount(realThis.totalPayoutAmount, winner.split, realThis.minChipValue);
+        }
+    });
 };
 
+/**
+ * checkForAmountErrors() - Determine if entire pot has been distributed.
+ * @returns {string} - "" if no errors, otherwise an appropriate message.
+ */
 PayoutController.prototype.checkForAmountErrors = function() {
-    // TODO: Implement checkForAmountErrors
+    // Compute total payout amount
+    var payoutAmount = _.reduce(this.winners, function(sum, winner) {
+        return sum + winner.amount;
+    }, 0);
+    this.payoutAmountRemaining = this.totalPayoutAmount - payoutAmount;
 
-    // TODO: Make Sure to update Amount Remaining.
+    // Set message is any amount is remaining.
+    if (this.payoutAmountRemaining > 0) {
+        return "Entire pot must be distributed.";
+    }
+    else if (this.payoutAmountRemaining < 0) {
+        return "Payout amount exceeds the pot.";
+    }
+    
+    return "";
+};
+
+/**
+ * computeSplitAmount() - Compute the split amount for a given portion.  The result
+ * will not include fractions of cents or fractions of chips.
+ * @param {number} potAmount - Total amount to split.
+ * @param {string} SplitValue - Split Portion (i.e. - "All", "1/2", "1/3" ...)
+ * @param {number} minChipValue - Minimum Chip Value
+ * @returns {number} Split Amount (dollars & cents)
+ */
+PayoutController.prototype.computeSplitAmount = function(potAmount, SplitValue, minChipValue) {
+    var workPotAmount = potAmount * 100;    // Convert from dollars & cents to cents
+    var workAmt;
+
+    // Compute the split amount
+    switch (SplitValue) {
+        case "1/2":
+            workAmt = workPotAmount * .5;
+            break;
+        case "1/3":
+            workAmt = workPotAmount * (1 / 3);
+            break;
+        case "2/3":
+            workAmt = workPotAmount * (2 / 3);
+            break;
+        case "1/4":
+            workAmt = workPotAmount * .25;
+            break;
+        case "3/4":
+            workAmt = workPotAmount * .75;
+            break;
+        case "1/6":
+            workAmt = workPotAmount * (1 / 6);
+            break;
+        case "5/6":
+            workAmt = workPotAmount * (5 / 6);
+            break;
+        default:
+            // All
+            workAmt = workPotAmount;
+            break;               
+    }
+
+    // Remove fractions of cents.
+    var splitAmount = Math.floor(workAmt)
+
+    // Remove fractions of chips
+    splitAmount = Math.floor(splitAmount / (minChipValue * 100)) * (minChipValue * 100);
+
+    // Remove fractions of cents and return Split Amount as dollars & cents
+    return Math.floor(splitAmount) / 100;
+};
+
+/**
+ * validateAmount() - Validate the entered winner amount info. 
+ * @param {string} amount = Winner amount value that was entered.
+ * @param {number} PotAmount 
+ * @param {number} minChipValue 
+ */
+PayoutController.prototype.validateAmount = function (amount, PotAmount, minChipValue) {
+    // Numeric check
+    if (isNaN(amount)) {
+        return "Amount must be numeric.";
+    }
+    var workAmount = Number(amount);
+
+    // Exceed pot value check
+    if (workAmount > PotAmount) {
+        return "Amount must be less that pot amount.";        
+    }
+
+    // Divisible by minimum chip value check
+    if ((workAmount % minChipValue) !== 0 ) {
+        return "Amount must be divisible by the minimum chip value.";
+    }
+
+    return "";
 };
 
 /*
