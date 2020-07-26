@@ -176,8 +176,13 @@ class SocketController {
         this.socket.emit("dealResume");
     };
 
+    dealerDeckDisposition() {
+        this.socket.emit("deckDisposition");
+    };
+
+
     // ************************************************************************************************
-    // Dealer Section
+    // Bet Section
     // ************************************************************************************************
 
     /**

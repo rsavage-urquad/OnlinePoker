@@ -40,6 +40,8 @@ DealerController.prototype.setupEvents = function () {
     $("#initiateBettingCancel").unbind();
     $("#endShowHands").unbind();
     $("#endHand").unbind();
+    $("#deckPass").unbind();
+    $("#deckDealAgain").unbind();
 
     // Set Button Click Events
     $("#handStartButton").click({obj: this}, this.startHandClicked);
@@ -52,6 +54,8 @@ DealerController.prototype.setupEvents = function () {
     $("#initiateBettingCancel").click({obj: this}, this.initiateBettingCancelClicked);
     $("#endShowHands").click({obj: this}, this.endShowAllHandsClicked);
     $("#endHand").click({obj: this}, this.endHandClicked);
+    $("#deckPass").click({obj: this}, this.deckPassClicked);
+    $("#deckDealAgain").click({obj: this}, this.deckDealAgainClicked);
 };
 
 
@@ -89,10 +93,12 @@ DealerController.prototype.startHandClicked = function(event) {
 DealerController.prototype.initiateDealing = function(payload) {
     var dealToNextName = payload.dealToNext;
     
+    $("#faceDown").prop("checked", true);
     this.updateDealToNext(dealToNextName);
     $("#dealToNext").text("Deal to " + dealToNextName);
     this.playerApp.hand.setDealToNextIdx(dealToNextName)
     $("#handSetupDialog").hide();
+    $("#deckDispositionArea").hide();
     $("#dealerCommandArea").show();
 };
 
@@ -185,6 +191,16 @@ DealerController.prototype.dealActionCompleted = function() {
  */
 DealerController.prototype.dealResume = function() {
     $("#dealerCommandArea").show();
+};
+
+/**
+ * deckDisposition() - Handles the "Deck Disposition" message from the server by
+ * displaying the options to the current dealer.
+ */
+DealerController.prototype.deckDisposition = function() {
+    $("#dealerCommandArea").hide();
+    $("#initBetCommandArea").hide();
+    $("#deckDispositionArea").show();
 };
 
 /**
@@ -292,6 +308,38 @@ DealerController.prototype.endHandClicked = function(event) {
     objThis.playerApp.payoutController.preparePayoutDialog(remainingPlayers, potAmount, minChipValue);
 };
 
+/**
+ * deckPassClicked() - Handles the "Pass the Deck" button click event by identifying the 
+ * next player and calling the "sendPickDealer" with their name to the server.
+ * @param {Object} event - Object associated with triggered Event.
+ */
+DealerController.prototype.deckPassClicked = function(event) {
+    var objThis = event.data.obj;
+
+    $("#deckDispositionArea").hide();
+
+    // Determine the next player's index
+    var workIdx = objThis.playerApp.getIdxOfPlayerName(objThis.playerApp.myName);
+    workIdx++;
+    workIdx = (workIdx === objThis.playerApp.playerList.length) ? 0 : workIdx;
+    
+    // Pass the deck
+    objThis.playerApp.sendPickDealer("Manual", objThis.playerApp.playerList[workIdx].name);
+};
+
+/**
+ * deckDealAgainClicked() - Handles the "Deal Again" button click event by calling 
+ * the "sendPickDealer" with my name to the server.
+ * @param {Object} event - Object associated with triggered Event.
+ */
+DealerController.prototype.deckDealAgainClicked = function(event) {
+    var objThis = event.data.obj;
+
+    $("#deckDispositionArea").hide();
+    objThis.playerApp.sendPickDealer("Manual", objThis.playerApp.myName);
+};
+
+
 
 // ************************************************************************************************
 // Data Activities Section
@@ -319,6 +367,7 @@ DealerController.prototype.sendDealerCommand = function(command, payload) {
  * dealerSetup() - Prepares the Dealer Setup dialog and hide the Dealer commands
  */
 DealerController.prototype.dealerSetup = function(payload) {
+    $("#deckDispositionArea").hide();    
     $("#dealerCommandArea").hide();
 
     if (payload.name === this.playerApp.myName) {
@@ -442,7 +491,7 @@ DealerController.prototype.validateHandSetupInfo = function() {
 };
 
 /**
- * advanceDealToNext() - Advance the Deal To Next info to the plater  to the left of
+ * advanceDealToNext() - Advance the Deal To Next info to the player  to the left of
  * the supplied Player
  * @param {string} currentDealToName - Current Deal To Player
  */

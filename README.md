@@ -38,8 +38,8 @@ This project is an attempt to create a multi-room multiplayer application to all
 | Topic | Status |
 | --- | :---: |
 | Display Hands | *Working but may change* |
-| Payout | *WIP* |
-| Deck Disposition (Pass Deck/Deal Again) | *Future* |
+| Payout | *Working* |
+| Deck Disposition (Pass Deck/Deal Again) | *Working* |
 
 ## Environment Details
 

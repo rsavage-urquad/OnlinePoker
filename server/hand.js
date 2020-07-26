@@ -49,6 +49,15 @@ class Hand {
         return playerCards;
     };
 
+    /**
+     * resetHandPlayerAmounts() - Resets the Hand amounts for each player. 
+     */
+    resetHandPlayerAmounts() {
+        _.forEach(this.players, function(p) {
+            p.amount = 0;
+        });
+    };
+
 
     // ************************************************************************************************
     // Action Methods
@@ -168,6 +177,18 @@ class Hand {
         this.sendDeckStats();
         this.displayHandPlayerArea();
         this.sendNextBetMessage(false);
+    };
+
+    processPayout(payload) {
+        // Distribute Payout
+        this.distributePayout(payload);
+
+        // Send Message to update Player Info and Hand Info areas
+        this.socketController.broadcastPlayerList(this.gameRoom.room);
+        this.displayHandPlayerArea();     
+
+        // Send Message to Dealer to Pass the Deck or Deal again.
+        this.socketController.dealerDeckDisposition();
     };
 
 
@@ -376,6 +397,22 @@ class Hand {
         const gameRoomPlayerIdx = this.gameRoom.getPlayerIdx(playerName);
         this.gameRoom.players[gameRoomPlayerIdx].amount -= bet;
         this.players[handPlayerIdx].amount += bet;
+    };
+
+    /**
+     * distributePayout() - Distribute the payout amount to the winner(s).
+     * @param {Array} payload - Array of winner objects containing {name, split, amount}.
+     */
+    distributePayout(payload) {
+        const realThis = this;
+
+        _.forEach(payload, function(payout) {
+            let gameRoomPlayerIdx = realThis.gameRoom.getPlayerIdx(payout.name);
+            realThis.gameRoom.players[gameRoomPlayerIdx].amount += payout.amount;
+        });
+
+        // Since the payout has been distributed, clear the Hand amounts.
+        this.resetHandPlayerAmounts();
     };
 };
 

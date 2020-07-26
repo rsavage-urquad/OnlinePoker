@@ -95,19 +95,27 @@ PayoutController.prototype.payoutWinnerSelectClicked = function(event) {
     $("#payoutWinnerCount").val(objThis.winners.length.toString());
 };
 
+/**
+ * payoutSubmitClicked() - Handles the Submit clicked event by validating that Payout
+ * should occur and, if so, send the Payout details to the servers.
+ * @param {Object} event - Object associated with triggered Event.
+ */
 PayoutController.prototype.payoutSubmitClicked = function(event) {
     var objThis = event.data.obj;    
 
     objThis.setPayoutMsg("");
+
+    // Validate that Payout can occur
+    objThis.updateWinnersFromForm();
+    var msg = objThis.checkForAmountErrors();
     if (msg !== "") {
         objThis.setPayoutMsg(msg); 
         return;      
     }
     
-    // TODO: Format the Payout Message and send to Server
-    // TODO: Server must respond with results, then "Pass the deal or not" options must be presented to dealer
-
-    console.log("payoutSubmit Clicked")
+    // Format the Payout Message and send to Server
+    objThis.playerApp.dealerController.sendDealerCommand("Payout", objThis.winners);
+    $("#payoutDialog").hide();  
 };
 
 /**
@@ -265,7 +273,7 @@ PayoutController.prototype.displayWinnersDomArea = function() {
  */
 PayoutController.prototype.updateFormAmounts = function() {
     _.forEach(this.winners, function(winner, idx) {
-        $("#winnerAmt-" + idx.toString()).val(winner.amount);
+        $("#winnerAmt-" + idx.toString()).val(accounting.toFixed(winner.amount, 2));
     });
 };
 
@@ -475,19 +483,3 @@ PayoutController.prototype.validateAmount = function (amount, PotAmount, minChip
 
     return "";
 };
-
-/*
-    objThis.winners.push({"name": selectedName, "split": "", "amount": 0 });
-
-    payoutWinnerCount
-    payoutWinnerSelectList
-    payoutArea
-    payoutAmountRemaining
-    payoutMsg
-
-    winnerName-#
-    winnerSplit-#
-    winnerAmt-#   
-
-*/
-

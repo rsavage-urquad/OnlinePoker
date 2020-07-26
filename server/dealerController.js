@@ -31,7 +31,9 @@ class DealerController {
             case "EndShowAllHands":
                 this.processShowAllHands();
                 break;
-                
+            case "Payout":
+                this.processPayout(payload);
+                break;    
             default:
                 this.socketController.dealerCommandFailure(`Unknown Command - ${command}`);                
                 return;
@@ -102,8 +104,16 @@ class DealerController {
      */
     processShowAllHands() {
         this.gameRoom.hand.emitShowAllHands();
-    }
+    };
 
+    /**
+     * processPayout() - Process the Payout message by passing it to the 
+     * Hand object.
+     * @param {Array} payload - Array of payout details.
+     */
+    processPayout(payload) {
+        this.gameRoom.hand.processPayout(payload);
+    };
 };
 
 module.exports = DealerController;

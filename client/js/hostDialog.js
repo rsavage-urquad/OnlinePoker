@@ -86,14 +86,7 @@ HostDialog.prototype.pickDealerProcessClick = function(event) {
     var player = (mode === "Random") ? "" : $("#pickDealerSelect").val();
 
     objThis.setError("");
-    objThis.playerApp.socket.emit("hostCommand", { 
-        room: objThis.playerApp.room,
-        command: "PickDealer",
-        payload: {
-            mode: mode,
-            player: player
-        }
-    });
+    objThis.playerApp.sendPickDealer(mode, player);
 };
 
 /**

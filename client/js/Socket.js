@@ -116,6 +116,14 @@ socket.on("dealResume", function() {
     playerApp.dealerController.dealResume();
 });
 
+/**
+ * "deckDisposition" event - Displays the Deck Disposition options.
+ */
+socket.on("deckDisposition", function() {
+    playerApp.dealerController.deckDisposition();
+});
+
+
 // ************************************************************************************************
 // Betting Section
 // ************************************************************************************************

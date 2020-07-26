@@ -282,6 +282,22 @@ PlayerApp.prototype.setOpponentNoXref = function() {
 };
 
 /**
+ * sendPickDealer() - Sends the Pick Dealer message to the server
+ * @param {string} mode - Pick mode ("Random" or "Manual")
+ * @param {string} player - Play name (if mode not "Random")
+ */
+PlayerApp.prototype.sendPickDealer = function(mode, player) {
+    this.socket.emit("hostCommand", { 
+        room: this.room,
+        command: "PickDealer",
+        payload: {
+            mode: mode,
+            player: player
+        }
+    });
+};
+
+/**
  * setOpponentNames() - Set the Opponents names on the table.
  */
 PlayerApp.prototype.setOpponentNames = function() {
@@ -336,4 +352,12 @@ PlayerApp.prototype.getPlayerCardAreaName = function(playerIdx) {
     // - If Player Idx is less than mine, the Id is their idx plus the number of players minus my idx.
     var areaNameId = (playerIdx > MyIdx) ? (playerIdx - MyIdx) : (playerIdx + (this.playerList.length - MyIdx));
     return "opponentCards-" + areaNameId.toString();
+};
+
+/**
+ * getIdxOfPlayerName() - Get the index of the requested Player.
+ * @param {string} playerName - Player's name to locate. 
+ */
+PlayerApp.prototype.getIdxOfPlayerName = function(playerName) {
+    return _.findIndex(this.playerList, function(p) { return p.name === (playerName); });
 };
