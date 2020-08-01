@@ -248,7 +248,8 @@ DealerController.prototype.initiateBettingNextClicked = function(event) {
 DealerController.prototype.initiateBettingSpecificClicked = function(event) {
     var objThis = event.data.obj;
 
-    // TODO: (Future) - Disable Initiate Buttons until selection is made?
+    // Disable Initiate Buttons until selection is made or canceled.
+    objThis.setBetOptions("disable");
 
     // Setup and display Select buttons
     objThis.setupSelectButtons(objThis, objThis.initiateBettingSpecificSelected);
@@ -260,6 +261,10 @@ DealerController.prototype.initiateBettingSpecificClicked = function(event) {
  * @param {Object} event - Object associated with triggered Event.
  */
 DealerController.prototype.initiateBettingCancelClicked = function(event) {
+    var objThis = event.data.obj;
+
+    $(".select-player").hide();
+    objThis.setBetOptions("enable");
     $("#initBetCommandArea").hide();
     $("#dealerCommandArea").show();
 }
@@ -275,6 +280,7 @@ DealerController.prototype.initiateBettingSpecificSelected = function(event) {
     var payload = {};
 
     $(".select-player").hide();
+    objThis.setBetOptions("enable");
 
     // Prepare and send command
     payload.startPlayerName = this.value;
@@ -407,6 +413,7 @@ DealerController.prototype.updateDealToNext = function(dealToNextName) {
 /**
  * setDealerOptions() - Enable or disable Dealer options to avoid accidental
  * deal due to double click.
+ * @param {string} mode - "enable" or "disable"
  */
 DealerController.prototype.setDealerOptions = function(mode) {
     var domElements = $("#dealerCommandArea button");
@@ -443,6 +450,18 @@ DealerController.prototype.setupSelectButtons = function(objThis, callback) {
     });    
 };
 
+/**
+ * setBetOptions() - Enables or disable the Start Betting option buttons.
+ * @param {string} mode - "enable" or "disable"
+ */
+DealerController.prototype.setBetOptions = function(mode) {
+    var domElements = $("#initBetCommandArea .bet-button");
+    var isDisable = (mode === "disable");
+
+    _.forEach(domElements, function(elem) {
+        domElements.prop("disabled", isDisable);
+    });
+};
 
 // ************************************************************************************************
 // Helpers Section

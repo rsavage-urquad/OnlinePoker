@@ -9,13 +9,17 @@ const BetController = require("./server/betController");
 
 let rooms = {};
 
+// Default Page
 app.get("/", function (req, res) {
     res.sendFile(__dirname + "/client/index.html");
 });
-app.get('/checkHost', function (req, res) {
+
+// Check Host functionality
+app.get("/checkHost", function (req, res) {
     const room = req.query.room;
     res.json({ "gotHost": checkForHost(room) })
 });
+
 app.use("/client", express.static(__dirname + "/client"));
 
 server.listen(2000);
@@ -66,6 +70,9 @@ function onConnect(socket) {
         dealerController.processCommand(data.command, data.payload);
     });
 
+    /**
+     * "betCommand" - Bet command processing.
+     */
     socket.on("betCommand", function(data) {
         // Make sure Room exists.  If not exit.
         if (!rooms.hasOwnProperty(data.room)) {
@@ -76,10 +83,6 @@ function onConnect(socket) {
         const betController = new BetController(socketController, rooms[data.room]);
         betController.processCommand(data.command, data.payload);
     });
-
-
-    //betCommand
-
 };
 
 /**

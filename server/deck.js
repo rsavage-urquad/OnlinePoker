@@ -21,7 +21,7 @@ class Deck {
 
         _.forEach(suits, (suit) => {
             _.forEach(values, (val) => {
-                deck.push({ "suit": suit, "value": val, "faceUp": false});
+                deck.push({ "suit": suit, "value": val, "faceUp": false, "special": false });
             })
         });
 
@@ -29,18 +29,10 @@ class Deck {
     };
 
     /**
-     * shuffle() - Shuffles the deck and resets the next card pointer
+     * shuffle() - Shuffles the deck.
      */
     shuffle() {
-        let newSlot = 0;
-        for (let mix = 0; mix < 8; mix++) {
-            for (let slot = 0; slot < 52; slot++) {
-                let card = this.deck[slot];
-                newSlot = Math.floor(Math.random() * 52);
-                this.deck[slot] = this.deck[newSlot];
-                this.deck[newSlot] = card;
-            }
-        }
+        this.shuffleTarget(this.deck);
     };
 
     /**
@@ -57,7 +49,7 @@ class Deck {
      */
     remainingCards() {
         return this.deck.length;
-    }
+    };
 
     /**
      * addToMuck() - Adds a card to the muck. 
@@ -65,7 +57,42 @@ class Deck {
      */
     addToMuck(card) {
         this.muck.push(card);
-    }
+    };
+
+    /** 
+     * shuffleMuck() - Shuffles the muck.
+     */
+    shuffleMuck(target) {
+        this.shuffleTarget(this.muck);
+    };
+
+    /**
+     * moveMuckToDeck() - Swaps the muck with the deck.
+     */
+    moveMuckToDeck() {
+        let tempArray = this.deck;
+        this.deck = this.muck;
+        this.muck = tempArray;
+    };
+
+
+    /**
+     * shuffleTarget() - Shuffles the target collection.
+     * @param {Array} target - Target collection to be shuffled.
+     */
+    shuffleTarget(target) {
+        let newSlot = 0;
+        const deckLength = target.length;
+
+        for (let mix = 0; mix < 8; mix++) {
+            for (let slot = 0; slot < deckLength; slot++) {
+                let card = target[slot];
+                newSlot = Math.floor(Math.random() * deckLength);
+                target[slot] = target[newSlot];
+                target[newSlot] = card;
+            }
+        }
+    };
 
 
 };
