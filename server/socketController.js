@@ -22,6 +22,8 @@ class SocketController {
      * @param {Object} data - Socket payload
      */
     join(data) {
+        let isRejoin = false;
+
         // Prepare Players for room.
         let players = [];
         if (this.rooms.hasOwnProperty(data.room)) {
@@ -48,7 +50,7 @@ class SocketController {
                 // Create Room
                 players = []
                 players.push(player);
-                this.rooms[data.room] = new GameRoom(data.room, players);
+                this.rooms[data.room] = new GameRoom(this, data.room, players);
             }
             const hostTag = (player.host) ? " (Host)" : "";
             console.log(`${player.name}${hostTag} - Session Id: ${player.socketId} - Room: ${player.room}`);
@@ -57,6 +59,7 @@ class SocketController {
             // Rejoining Player
             players = this.rooms[data.room].players;
             players[playerIdx].socketId = this.socket.id;
+            isRejoin = true;          
         }
 
         // Notify Player of "join" success
@@ -64,7 +67,13 @@ class SocketController {
         this.socket.emit("joinSuccess");
 
         // Send all players the updated Player List
-        this.broadcastPlayerList(data.room);        
+        this.broadcastPlayerList(data.room);
+
+        // if rejoining user, resend the current state.
+        if (isRejoin) {
+            this.rooms[data.room].sendRejoinState(players[playerIdx]);
+        }
+
     };
 
     /**

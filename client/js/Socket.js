@@ -28,6 +28,10 @@ socket.on("joinError", function(data) {
     playerApp.setJoinErrors(data.errorMsg);
 });
 
+socket.on("rejoinPlayerState", function(data) {
+    // TODO: Implement rejoinPlayerState
+    console.log("rejoinPlayerState");
+});
 
 // ************************************************************************************************
 // Host Section
@@ -56,6 +60,7 @@ socket.on("hostCommandFailure", function(msg) {
  * "dealerSetup" event - Passes the Dealer setup message to the app for processing.
  */
 socket.on("dealerSetup", function(payload) {
+    console.log(payload)
     playerApp.dealerController.dealerSetup(payload);
 });
 
@@ -146,7 +151,6 @@ socket.on("betCommandFailure", function(payload) {
 // ************************************************************************************************
 // End Hand Section
 // ************************************************************************************************
-
 
 socket.on("showAllHands", function(payload) {
     playerApp.hand.showAllHands(payload);

@@ -49,6 +49,7 @@ class DealerController {
     processHandSetup(payload) {
         this.gameRoom.hand = new Hand(this.socketController, this.gameRoom, payload.gameName, payload.commentInfo, payload.anteAmount);
         this.gameRoom.hand.getAnte();
+        this.gameRoom.setState("Deal", this.gameRoom.getDealer().name);
         this.socketController.broadcastPlayerList(this.gameRoom.room);
         this.gameRoom.hand.displayHandInfo();
         const dealToNext = this.gameRoom.hand.getDealToNextName();

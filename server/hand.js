@@ -1,5 +1,6 @@
 const _ = require("lodash");
 const Deck = require("./deck");
+const Card = require("./card");
 const HandPlayer = require("./handPlayer");
 const Bet = require("./bet");
 
@@ -107,6 +108,7 @@ class Hand {
      */
     betInitiate(playerName) {
         this.bet = new Bet(this, playerName, this.gameRoom.maxRaise);
+        this.gameRoom.setState("Bet", playerName);
         this.emitBetMessage();
     };
 
@@ -268,7 +270,7 @@ class Hand {
      * @param {*} card - Card
      */
     emitCard(playerName, card) {
-        const downCard = { "suit": "X", "value": "X", "faceUp": false }
+        const downCard = new Card("X", "X", false, card.special);
         let dealCard = (card.faceUp) ? card : downCard;
 
         this.socketController.emitToRoom(
@@ -335,6 +337,30 @@ class Hand {
         );        
     }
 
+    /**
+     * resendState() - Resend the State information to a rejoining player.
+     * @param {Object} player - Rejoining Player 
+     * @param {string} state - Game State
+     */
+    resendState(player, state) {
+        const cardInfo = this.prepareCardInfo(player);
+        const handInfo = { "name": this.name, "commentInfo": this.commentInfo };
+        let statePayload = this.prepareStatePayload(player, state);
+
+        this.socketController.emitToPlayer(
+            player.socketId, 
+            "rejoinPlayerState",
+            {
+                "handInfo": handInfo,
+                "handPlayerInfo": this.players,
+                "cardInfo": cardInfo,
+                "state": state,
+                "statePayload": statePayload
+            }
+        );
+    };
+
+
     // ************************************************************************************************
     // Helper Methods
     // ************************************************************************************************
@@ -368,9 +394,11 @@ class Hand {
 
         // If betting is completed, inform dealer to continue.
         if (this.bet.bettingEnded) {
+            this.gameRoom.setState("Deal", this.gameRoom.getDealer().name);
             this.socketController.dealerResume();
         }
         else {
+            this.gameRoom.setState("Bet", this.bet.currentPlayer);
             this.emitBetMessage();
         }
     };
@@ -414,6 +442,64 @@ class Hand {
         // Since the payout has been distributed, clear the Hand amounts.
         this.resetHandPlayerAmounts();
     };
+
+    /**
+     * prepareCardInfo() -  Prepares all players card information to send to the 
+     * rejoining Player.
+     * @param {Object} rejoinPlayer - Rejoining Player.
+     */
+    prepareCardInfo(rejoinPlayer) {
+        let cardInfo = { "hands": [] };
+
+        _.forEach(this.gameRoom.players, function(player, idx) {
+            if (!player.fold) {
+                let cards = [];
+                _.forEach(realThis.playerCards[idx].cards, function(card) {
+                    let sendCard = new Card();
+                    sendCard.setCard(card);
+                    if (player.name === rejoinPlayer.name) {
+                        sendCard.faceUp = true;
+                    }
+                    cards.push(sendCard);                  
+                });
+                cardInfo.hands.push({ "name": player.name, "cards": cards });
+            }
+        });
+        return cardInfo;
+    };
+
+    /**
+     * prepareStatePayload() - Route to the appropriate method to build the payload
+     * based on the state.
+     * @param {Object} player - Rejoining Player
+     * @param {string} state - Rejoin state
+     * @returns {Object} - Payload object
+     */
+    prepareStatePayload(player, state) {
+        let payload = {};
+
+        switch (state.toLowerCase()) {
+            case "deal":
+                payload = this.getDealPayload(player);
+                break;
+            case "bet":
+                payload = this.getBetPayload(player);
+                break
+            // Default is to return empty object
+        }
+        return payload;
+    };  
+
+    getDealPayload(player) {
+        // TODO: Implement getDealPayload
+        console.log("getDealPayload");
+    };
+
+    getBetPayload(player) {
+        // TODO: Implement getBetPayload
+        console.log("getBetPayload");
+    }
+
 };
 
 module.exports = Hand;

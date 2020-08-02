@@ -1,4 +1,5 @@
 const _ = require("lodash");
+const Card = require("./card");
 
 class Deck {
     constructor () {
@@ -21,7 +22,7 @@ class Deck {
 
         _.forEach(suits, (suit) => {
             _.forEach(values, (val) => {
-                deck.push({ "suit": suit, "value": val, "faceUp": false, "special": false });
+                deck.push(new Card(suit, val, false, false));
             })
         });
 
