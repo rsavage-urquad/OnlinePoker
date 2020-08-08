@@ -52,7 +52,7 @@ class DealerController {
         this.gameRoom.setState("Deal", this.gameRoom.getDealer().name);
         this.socketController.broadcastPlayerList(this.gameRoom.room);
         this.gameRoom.hand.displayHandInfo();
-        const dealToNext = this.gameRoom.hand.getDealToNextName();
+        const dealToNext = this.gameRoom.hand.getDealToNextName(-1);
         this.socketController.dealerCommandInitiateDealing(dealToNext);
     };
 

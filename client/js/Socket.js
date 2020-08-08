@@ -29,8 +29,7 @@ socket.on("joinError", function(data) {
 });
 
 socket.on("rejoinPlayerState", function(data) {
-    // TODO: Implement rejoinPlayerState
-    console.log("rejoinPlayerState");
+    playerApp.rejoin(data);
 });
 
 // ************************************************************************************************
@@ -153,5 +152,5 @@ socket.on("betCommandFailure", function(payload) {
 // ************************************************************************************************
 
 socket.on("showAllHands", function(payload) {
-    playerApp.hand.showAllHands(payload);
+    playerApp.hand.populateAndDisplayAllHands(payload);
 });

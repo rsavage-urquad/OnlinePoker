@@ -34,12 +34,14 @@ class GameRoom {
         return _.find(this.players, function(item) { return item.name === name; });       
     };
 
+    /**
+     * setState() - Sets the current Game State, including any related User Info.
+     * @param {string} state - Game State
+     * @param {string} stateUser - Related Users Name
+     */
     setState(state, stateUser) {
         this.state = state;
         this.stateUser = stateUser;
-        
-        // TODO: (Testing) To be removed
-        console.log(`State: ${this.state} - User: ${this.stateUser}`);
     };
     
     // ************************************************************************************************

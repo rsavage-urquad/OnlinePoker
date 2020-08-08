@@ -2,6 +2,7 @@ var HandPlayer = function (name, amount) {
     this.name = name;
     this.amount = amount;
     this.fold = false;
+    this.declare = "";
 };
 
 /**
@@ -9,6 +10,7 @@ var HandPlayer = function (name, amount) {
  */
 HandPlayer.prototype.display = function() {
     var fold = (this.fold) ? " (<span class='fold-ind'>Fold</span>)" : "";
+    var declare = (this.declare !== "") ? " (<span>Declare: " + this.declare + "</span>)" : "";
     var amount = accounting.formatMoney(this.amount);
-    return `${this.name}${fold} = ${amount}`;
+    return this.name + fold + declare + " = " + amount;
 };

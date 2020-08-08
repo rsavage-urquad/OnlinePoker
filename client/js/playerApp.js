@@ -188,6 +188,28 @@ PlayerApp.prototype.checkHostAvailable = function () {
     );
 };
 
+/**
+ * rejoin() - Process setup actions when a player rejoin after disconnect 
+ * or browser refresh.
+ * @param {Object} data - Rejoin state data.
+ */
+PlayerApp.prototype.rejoin = function(data) {
+    // Set and display Hand and Card info.
+    this.hand = new Hand(this, data.handInfo.name, data.handInfo.commentInfo, []);
+    this.hand.setRejoinHandPlayers(data.handPlayerInfo);
+    this.hand.populateAndDisplayAllHands(data.cardInfo);
+
+    // Process any special states (deal, bet ...)
+    switch (data.state.toLowerCase()) {
+        case "deal":
+            this.hand.dealerRejoin(data.statePayload);
+            break;
+        case "bet":
+            this.hand.bettorRejoin(data.statePayload);
+            break;
+    }
+};
+
 
 // ************************************************************************************************
 // Display Processing Section

@@ -111,6 +111,36 @@ Hand.prototype.deckStatsReceived = function(payload) {
 // Data Activities Section
 // ************************************************************************************************
 
+/**
+ * setRejoinHandPlayers() - Set and display the Hand's Player information after the 
+ * player rejoins during a hand.  Also create empty hands.
+ * @param {Array} playerInfo - Collection of player information.
+ */
+Hand.prototype.setRejoinHandPlayers = function(playerInfo) {
+    var realThis = this;
+    var player;
+
+    _.forEach(playerInfo, function(p) {
+        player = new HandPlayer(p.name, p.amount);
+        player.fold = p.fold;
+        player.declare = p.declare;
+        realThis.players.push(player);
+        realThis.hands.push({ "playerName": p.name, "cards": [] });
+    });
+
+    this.displayHandDetails("handName", "handCommentInfo");
+    this.displayHandPlayerInfo("handPlayerInfoArea");
+};
+
+Hand.prototype.dealerRejoin = function(statePayload) {
+    // TODO: Implement dealerRejoin  <---
+    console.log("dealerRejoin");
+};
+
+Hand.prototype.bettorRejoin = function(statePayload) {
+    // TODO: Implement bettorRejoin 
+    console.log("bettorRejoin");
+};
 
 // ************************************************************************************************
 // Display Processing Section
@@ -216,16 +246,16 @@ Hand.prototype.displayHandCardsForPlayer = function(playerIdx, isMyPlayer) {
 };
 
 /**
- * showAllHands() - Displays the cards for all active players.
- * @param {Object} payload - Contains arrays of all cards for all players. 
+ * populateAndDisplayAllHands() - Populates and displays the cards for all players.
+ * @param {Object} cardInfo - Contains arrays of all cards for all players. 
  */
-Hand.prototype.showAllHands = function(payload) {
+Hand.prototype.populateAndDisplayAllHands = function(cardInfo) {
     var realThis = this;
     var playerIdx;
     var card;
 
-    // Display each player's hand.
-    _.forEach(payload.hands, function(hand) {
+    // Sets and display each player's hand.
+    _.forEach(cardInfo.hands, function(hand) {
         playerIdx = realThis.getIdxOfPlayerName(hand.name);
         realThis.hands[playerIdx].cards = [];
         // Populate cards received from server

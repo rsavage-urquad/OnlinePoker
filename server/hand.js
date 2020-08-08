@@ -99,6 +99,10 @@ class Hand {
         }
         this.playerCards[playerIdx].cards.push(card);
         this.emitCard(playerName, card);
+
+        // Update the Deal to Next index
+        this.dealToNext = (this.dealToNext < (this.players.length - 1)) ? this.dealToNext + 1 : 0;
+
     };
 
     /**
@@ -181,6 +185,11 @@ class Hand {
         this.sendNextBetMessage(false);
     };
 
+    /**
+     * processPayout() - Distribute the payout to the winner(s) and send an
+     * update message with the new totals to the players.
+     * @param {Array} payload - Payout details
+     */
     processPayout(payload) {
         // Distribute Payout
         this.distributePayout(payload);
@@ -374,13 +383,18 @@ class Hand {
     };
 
     /**
-     * getDealToNextName() - Returns the name of the player to the left of the dealer.
+     * getDealToNextName() - Returns the name of the player to be dealt to next.
+     * @param {number} dealToIdx - Index of the player to deal to next.
      * @returns - Name of the player to the left of the dealer.
      */
-    getDealToNextName() {
-        let dealToIdx = this.gameRoom.getDealerIdx();
-        dealToIdx++;
-        if (dealToIdx >= this.players.length) { dealToIdx = 0; }
+    getDealToNextName(dealToIdx) {
+        // if dealToIdx is -1, next is Player to the left of the dealer.
+        if (dealToIdx === -1) {
+            dealToIdx = this.gameRoom.getDealerIdx();
+            dealToIdx++;
+            if (dealToIdx >= this.players.length) { dealToIdx = 0; }
+        }
+
         return this.players[dealToIdx].name;
     };
 
@@ -449,7 +463,8 @@ class Hand {
      * @param {Object} rejoinPlayer - Rejoining Player.
      */
     prepareCardInfo(rejoinPlayer) {
-        let cardInfo = { "hands": [] };
+        const realThis = this;
+        const cardInfo = { "hands": [] };
 
         _.forEach(this.gameRoom.players, function(player, idx) {
             if (!player.fold) {
@@ -457,8 +472,16 @@ class Hand {
                 _.forEach(realThis.playerCards[idx].cards, function(card) {
                     let sendCard = new Card();
                     sendCard.setCard(card);
-                    if (player.name === rejoinPlayer.name) {
-                        sendCard.faceUp = true;
+                    if (!sendCard.faceUp) {
+                        if (player.name === rejoinPlayer.name) {
+                            // Card belongs to rejoining player, so set as face up.
+                            sendCard.faceUp = true;
+                        }
+                        else {
+                            // Card should be Face Down
+                            sendCard.suit = "X";
+                            sendCard.value = "X";                            
+                        }
                     }
                     cards.push(sendCard);                  
                 });
@@ -490,9 +513,13 @@ class Hand {
         return payload;
     };  
 
+    /**
+     * getDealPayload() - Sets up and payload info need when the rejoining
+     * player is the dealer.
+     * @param {Object} player - Rejoining Player
+     */
     getDealPayload(player) {
-        // TODO: Implement getDealPayload
-        console.log("getDealPayload");
+        return { "dealToNext": this.getDealToNextName(this.dealToNext) };
     };
 
     getBetPayload(player) {
