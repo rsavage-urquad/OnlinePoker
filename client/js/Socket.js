@@ -59,7 +59,6 @@ socket.on("hostCommandFailure", function(msg) {
  * "dealerSetup" event - Passes the Dealer setup message to the app for processing.
  */
 socket.on("dealerSetup", function(payload) {
-    console.log(payload)
     playerApp.dealerController.dealerSetup(payload);
 });
 

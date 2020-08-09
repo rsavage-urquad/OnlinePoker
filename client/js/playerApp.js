@@ -202,7 +202,10 @@ PlayerApp.prototype.rejoin = function(data) {
     // Process any special states (deal, bet ...)
     switch (data.state.toLowerCase()) {
         case "deal":
-            this.hand.dealerRejoin(data.statePayload);
+            this.hand.dealerRejoin(data.statePayload, true);
+            break;
+        case "dealwait":
+            this.hand.dealerRejoin(data.statePayload, false);
             break;
         case "bet":
             this.hand.bettorRejoin(data.statePayload);

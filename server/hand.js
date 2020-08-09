@@ -199,7 +199,7 @@ class Hand {
         this.displayHandPlayerArea();     
 
         // Send Message to Dealer to Pass the Deck or Deal again.
-        this.socketController.dealerDeckDisposition();
+        this.gameRoom.socketController.dealerDeckDisposition();
     };
 
 
@@ -409,7 +409,7 @@ class Hand {
         // If betting is completed, inform dealer to continue.
         if (this.bet.bettingEnded) {
             this.gameRoom.setState("Deal", this.gameRoom.getDealer().name);
-            this.socketController.dealerResume();
+            this.gameRoom.dealerController.socketController.dealerResume();
         }
         else {
             this.gameRoom.setState("Bet", this.bet.currentPlayer);
@@ -503,6 +503,7 @@ class Hand {
 
         switch (state.toLowerCase()) {
             case "deal":
+            case "dealwait":
                 payload = this.getDealPayload(player);
                 break;
             case "bet":
@@ -523,7 +524,7 @@ class Hand {
     };
 
     getBetPayload(player) {
-        // TODO: Implement getBetPayload
+        // TODO: Implement getBetPayload  <--
         console.log("getBetPayload");
     }
 

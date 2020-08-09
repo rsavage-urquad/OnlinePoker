@@ -67,6 +67,7 @@ function onConnect(socket) {
 
         const socketController = new SocketController(io, socket, rooms);
         const dealerController = new DealerController(socketController, rooms[data.room]);
+        rooms[data.room].setDealerController(dealerController);
         dealerController.processCommand(data.command, data.payload);
     });
 

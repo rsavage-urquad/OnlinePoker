@@ -48,7 +48,7 @@ HostDialog.prototype.setupEvents = function () {
  * open() - Opens the Host Dialog
  */
 HostDialog.prototype.open = function () {
-    // TODO: Reset default values in dialog.   
+    // TODO: (Cleanup) Reset default values in dialog.   
     $("#hostDialog").show();
 };
 
@@ -96,7 +96,7 @@ HostDialog.prototype.pickDealerProcessClick = function(event) {
 HostDialog.prototype.setAnteModeProcessClick = function(event) {
     var objThis = event.data.obj;
 
-    // TODO: Implement "setAnteModeProcessClick"
+    // TODO: (Future) Implement "setAnteModeProcessClick"
 
     objThis.setError("");
     objThis.playerApp.socket.emit("hostCommand", { 

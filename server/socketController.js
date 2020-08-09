@@ -23,6 +23,7 @@ class SocketController {
      */
     join(data) {
         let isRejoin = false;
+        let hostTag = "";
 
         // Prepare Players for room.
         let players = [];
@@ -52,14 +53,16 @@ class SocketController {
                 players.push(player);
                 this.rooms[data.room] = new GameRoom(this, data.room, players);
             }
-            const hostTag = (player.host) ? " (Host)" : "";
+            hostTag = (player.host) ? " (Host)" : "";
             console.log(`${player.name}${hostTag} - Session Id: ${player.socketId} - Room: ${player.room}`);
         }
         else {
             // Rejoining Player
             players = this.rooms[data.room].players;
             players[playerIdx].socketId = this.socket.id;
-            isRejoin = true;          
+            isRejoin = true;
+            hostTag = (players[playerIdx].host) ? " (Host)" : "";  
+            console.log(`Rejoin: ${players[playerIdx].name}${hostTag} - Session Id: ${players[playerIdx].socketId} - Room: ${players[playerIdx].room}`);        
         }
 
         // Notify Player of "join" success
@@ -71,7 +74,7 @@ class SocketController {
 
         // if rejoining user, resend the current state.
         if (isRejoin) {
-            this.rooms[data.room].sendRejoinState(players[playerIdx]);
+            this.rooms[data.room].sendRejoinState(players[playerIdx], this.socket);
         }
 
     };
@@ -182,6 +185,7 @@ class SocketController {
      * dealerResume() - Informs dealer to resume dealing.
      */
     dealerResume() {
+        console.log(`Dealer Resume to ${this.socket}`);
         this.socket.emit("dealResume");
     };
 

@@ -95,8 +95,6 @@ DealerController.prototype.initiateDealing = function(payload) {
     
     $("#faceDown").prop("checked", true);
     this.updateDealToNext(dealToNextName);
-    $("#dealToNext").text("Deal to " + dealToNextName);
-    this.playerApp.hand.setDealToNextIdx(dealToNextName)
     $("#handSetupDialog").hide();
     $("#deckDispositionArea").hide();
     $("#dealerCommandArea").show();

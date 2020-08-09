@@ -132,9 +132,20 @@ Hand.prototype.setRejoinHandPlayers = function(playerInfo) {
     this.displayHandPlayerInfo("handPlayerInfoArea");
 };
 
-Hand.prototype.dealerRejoin = function(statePayload) {
-    // TODO: Implement dealerRejoin  <---
-    console.log("dealerRejoin");
+/**
+ * dealerRejoin() - Process Dealer Rejoin message by setting the Deal To Next info
+ * and displaying the Dealer Commands, if requested.
+ * @param {Object} statePayload - State Payload.  Contains Deal To Next info
+ * @param {boolean} showDealerCommands - Should Dealer Commands be displayed?
+ */
+Hand.prototype.dealerRejoin = function(statePayload, showDealerCommands) {
+    // Set Deal To Next info
+    this.setDealToNextIdx(statePayload.dealToNext); 
+
+    // Show Dealer Commands, if necessary
+    if (showDealerCommands) {
+        this.playerApp.dealerController.initiateDealing(statePayload);
+    }
 };
 
 Hand.prototype.bettorRejoin = function(statePayload) {

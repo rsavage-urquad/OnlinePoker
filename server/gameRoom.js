@@ -2,7 +2,8 @@ const _ = require('lodash');
 
 class GameRoom {
     constructor (socketController, room, players) {
-        this.socketController = socketController
+        this.socketController = socketController;
+        this.dealerController = null;
         this.room = room;
         this.players = players;
         this.anteMode = "player";   
@@ -42,8 +43,28 @@ class GameRoom {
     setState(state, stateUser) {
         this.state = state;
         this.stateUser = stateUser;
+        // TODO: (Testing) To Be Removed
+        console.log(state + " - " + stateUser);
     };
     
+    /**
+     * setDealerController() - Setter for the dealerController object
+     * @param {Object} dealerController 
+     */
+    setDealerController(dealerController) {
+        this.dealerController = dealerController;
+    };
+
+    /**
+     * setDealerControllerSocket() - Sets the dealerController object's socket property.
+     * @param {object} socket - Socket object to set to.
+     */
+    setDealerControllerSocket(socket) {
+        if ((this.dealerController !== undefined) && (this.dealerController !== null)) {
+            this.dealerController.socketController.socket = socket;
+        }
+    };
+
     // ************************************************************************************************
     // Dealer Methods
     // ************************************************************************************************
@@ -73,6 +94,7 @@ class GameRoom {
     passControlToDealer(socketController) {
         const dealer = this.getDealer();
         this.setState("GameSetup", dealer.name);
+        this.dealerController = null;
         socketController.emitToRoom(this.room, "dealerSetup", { "name": dealer.name, "defaultAnte": this.defaultAnte });
     };
 
@@ -91,9 +113,10 @@ class GameRoom {
     /**
      * sendRejoinState() - Routes the logic to send the appropriate information to 
      * a rejoining player (in the event of a refresh or disconnect). 
-     * @param {Object} player - Rejoining Player  
+     * @param {Object} player - Rejoining Player
+     * @param {Object} socket - Socket Information
      */
-    sendRejoinState(player) {
+    sendRejoinState(player, socket) {
         switch(this.state.toLowerCase()) {
             case "join":
                 // No action necessary;
@@ -102,12 +125,22 @@ class GameRoom {
                 this.updateStateGameSetup(player)
                 break;
             case "deal":
-                this.updateStateDeal(player)
+                this.updateStateDeal(player, socket)
+                break;
+            case "dealwait":
+                this.updateStateDeal(player,socket)
                 break;
             case "bet":
                 this.updateStateBet(player)
                 break;
         }
+
+        // No matter what state, check to see if the rejoiner is the Dealer.. If so set the 
+        // Dealer Controller's socket.
+        if (player.name === this.getDealer().name) {
+            this.socketController.socket = socket;
+            this.setDealerControllerSocket(socket);
+        }      
     };
 
     /**
@@ -122,12 +155,18 @@ class GameRoom {
     };
 
     /**
-     * updateStateDeal() - Rejoin occurred during a "Deal" state.  Send the hand details
-     * and, if the player is the dealer, put them in Deal mode.
+     * updateStateDeal() - Rejoin occurred during a "Deal" or "DealWait" state.  Send 
+     * the hand details and, if the player is the dealer, put them in appropriate Deal 
+     * mode.
      * @param {Object} player - Rejoining Player
+     * @param {Object} socket - Socket Information
      */
-    updateStateDeal(player) {
-        let passState = (player.name === this.getDealer().name) ? "Deal" : "";
+    updateStateDeal(player, socket) {
+        let passState = "";
+        if (player.name === this.getDealer().name) {
+            passState = this.state;
+            this.socketController.socket = socket;
+        }
         this.hand.resendState(player, passState);
     };
 
