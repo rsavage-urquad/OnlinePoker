@@ -148,9 +148,13 @@ Hand.prototype.dealerRejoin = function(statePayload, showDealerCommands) {
     }
 };
 
+/**
+ * bettorRejoin() - Process Bettor Rejoin message by preparing and enabling the 
+ * betting controls.
+ * @param {Object} statePayload - Player's Bet State information
+ */
 Hand.prototype.bettorRejoin = function(statePayload) {
-    // TODO: Implement bettorRejoin 
-    console.log("bettorRejoin");
+    this.playerApp.betController.enableBetting(statePayload);
 };
 
 // ************************************************************************************************

@@ -185,10 +185,13 @@ class SocketController {
      * dealerResume() - Informs dealer to resume dealing.
      */
     dealerResume() {
-        console.log(`Dealer Resume to ${this.socket}`);
         this.socket.emit("dealResume");
     };
 
+    /**
+     * dealerDeckDisposition() - Hand has ended, request the dealer to select a disposition
+     * for the deck.
+     */
     dealerDeckDisposition() {
         this.socket.emit("deckDisposition");
     };

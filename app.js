@@ -84,6 +84,20 @@ function onConnect(socket) {
         const betController = new BetController(socketController, rooms[data.room]);
         betController.processCommand(data.command, data.payload);
     });
+
+    /**
+     * "connect_error" - Issue with Connection
+     */
+    socket.on("connect_error", function(err) {
+        console.log("Socket IO connect_error: ", err);
+    });
+
+    /**
+     * "error" - General Issue
+     */
+    socket.on("error", function(err) {
+        console.log("Socket IO error: ", err);
+    });
 };
 
 /**

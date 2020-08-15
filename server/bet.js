@@ -27,7 +27,7 @@ class Bet {
 
         _.forEach(this.hand.players, function(player) {
             if (!player.fold) {
-                playerBets.push(new HandPlayer(player.name, 0));
+                playerBets.push(new HandPlayer(player.name));
             }
         });
 
@@ -115,7 +115,17 @@ class Bet {
         }
     
         return playerIdx;
-    };    
+    };
+
+    /**
+     * getPlayerBetSum() - Gets the total of the players bets for the current round.
+     * @param {string} name - Player name to get data for.
+     * @returns {number} - Player's previous bet amount.
+     */
+    getPlayerBetSum(name) {
+        var idx = this.getPlayerIdx(name);
+        return this.playerBets[idx].amount;
+    }
 
 };
 

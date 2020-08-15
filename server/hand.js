@@ -4,6 +4,18 @@ const Card = require("./card");
 const HandPlayer = require("./handPlayer");
 const Bet = require("./bet");
 
+/**
+ * Hand Object - Central controller for a hand'
+ * Note on using "this.socketController" vs ."this.gameRoom.socketController"
+ * 
+ * "this.socketController" is set from dealerController at hand setup (and Dealer rejoin)
+ * it should be used for explicit transmissions to the Dealer.
+ * 
+ * "this.gameRoom.socketController" is created upon initial Join of the first player
+ * in the room and is (minimally) updated on all subsequent join (including rejoin) actions.
+ * it should be used for emit to the Room or an individual Player.  Note that the originally
+ * socket creator may have rejoined, to the original creator context may no longer be relevant.
+ */
 class Hand {
     constructor (socketController, gameRoom, name, commentInfo, anteAmount) {
         this.socketController = socketController;
@@ -122,6 +134,8 @@ class Hand {
      */
     processBetCheck(payload) {
         const playerName = payload.player;
+
+        this.gameRoom.setState("", playerName);
         if (this.bet.currentPlayer !== playerName) {
             emitUnexpectedEvent(`Got a message from an unexpected player - ${playerName}`);
             return;
@@ -139,6 +153,7 @@ class Hand {
         const totalBetAmt = this.bet.currentBet + raiseAmt;
         const wasRaise = (raiseAmt !== 0);      // Player did not actually raise if amount was 0
 
+        this.gameRoom.setState("", playerName);
         if (this.bet.currentPlayer !== playerName) {
             emitUnexpectedEvent(`Got a message from an unexpected player - ${playerName}`);
             return;
@@ -155,7 +170,7 @@ class Hand {
         this.updatePlayerAmount(playerName, actualBetAmt);
 
         // Refresh display for player amounts and and pass bet to the appropriate player.
-        this.socketController.broadcastPlayerList(this.gameRoom.room);
+        this.gameRoom.socketController.broadcastPlayerList(this.gameRoom.room);
         this.displayHandPlayerArea();        
         this.sendNextBetMessage(wasRaise);
     };
@@ -166,6 +181,8 @@ class Hand {
      */
     processFold(payload) {
         const playerName = payload.player;
+
+        this.gameRoom.setState("", playerName);
         if (this.bet.currentPlayer !== playerName) {
             emitUnexpectedEvent(`Got a message from an unexpected player - ${playerName}`);
             return;
@@ -195,11 +212,11 @@ class Hand {
         this.distributePayout(payload);
 
         // Send Message to update Player Info and Hand Info areas
-        this.socketController.broadcastPlayerList(this.gameRoom.room);
+        this.gameRoom.socketController.broadcastPlayerList(this.gameRoom.room);
         this.displayHandPlayerArea();     
 
         // Send Message to Dealer to Pass the Deck or Deal again.
-        this.gameRoom.socketController.dealerDeckDisposition();
+        this.socketController.dealerDeckDisposition();
     };
 
 
@@ -222,7 +239,7 @@ class Hand {
         }
 
         let prevBetSum = this.bet.playerBets[betPlayerIdx].amount;
-        this.socketController.emitToPlayer(
+        this.gameRoom.socketController.emitToPlayer(
             player.socketId, 
             "betRequest",
             {
@@ -239,14 +256,14 @@ class Hand {
      * @param {string} msg - Details on Unexpected Event.
      */
     emitUnexpectedEvent(msg) {
-        this.socketController.betCommandFailure(msg);
+        this.gameRoom.socketController.betCommandFailure(msg);
     };
     
     /**
      * displayHandInfo() - Send the Hand Information to the Room (initial send for Hand).
      */
     displayHandInfo() {
-        this.socketController.emitToRoom(
+        this.gameRoom.socketController.emitToRoom(
             this.gameRoom.room, 
             "handInfoInitialize", 
             {
@@ -261,7 +278,7 @@ class Hand {
      * displayHandPlayerArea() - Sends the Hand's Player information message to the Room. 
      */
     displayHandPlayerArea() {
-        this.socketController.emitToRoom(
+        this.gameRoom.socketController.emitToRoom(
             this.gameRoom.room, 
             "handPlayerInfoUpdate", 
             {
@@ -282,7 +299,7 @@ class Hand {
         const downCard = new Card("X", "X", false, card.special);
         let dealCard = (card.faceUp) ? card : downCard;
 
-        this.socketController.emitToRoom(
+        this.gameRoom.socketController.emitToRoom(
             this.gameRoom.room, 
             "dealToPlayer",
             {
@@ -294,7 +311,7 @@ class Hand {
         // Deal the card to the player Face Up (if it was not already sent Face Up)
         if (!card.faceUp) {
             let player = this.gameRoom.getPlayerObject(playerName);
-            this.socketController.emitToPlayer(
+            this.gameRoom.socketController.emitToPlayer(
                 player.socketId, 
                 "dealToPlayer",
                 {
@@ -325,7 +342,7 @@ class Hand {
             }
         });
 
-        this.socketController.emitToRoom(
+        this.gameRoom.socketController.emitToRoom(
             this.gameRoom.room, 
             "showAllHands",
             payload
@@ -339,7 +356,7 @@ class Hand {
         let deckStats = `Deck: ${this.deck.deck.length} - Muck: ${this.deck.muck.length}`;
         let payload = { "deckStats": deckStats };
 
-        this.socketController.emitToRoom(
+        this.gameRoom.socketController.emitToRoom(
             this.gameRoom.room, 
             "deckStats",
             payload
@@ -356,7 +373,7 @@ class Hand {
         const handInfo = { "name": this.name, "commentInfo": this.commentInfo };
         let statePayload = this.prepareStatePayload(player, state);
 
-        this.socketController.emitToPlayer(
+        this.gameRoom.socketController.emitToPlayer(
             player.socketId, 
             "rejoinPlayerState",
             {
@@ -515,7 +532,7 @@ class Hand {
     };  
 
     /**
-     * getDealPayload() - Sets up and payload info need when the rejoining
+     * getDealPayload() - Sets up and payload info needed when the rejoining
      * player is the dealer.
      * @param {Object} player - Rejoining Player
      */
@@ -523,9 +540,18 @@ class Hand {
         return { "dealToNext": this.getDealToNextName(this.dealToNext) };
     };
 
+    /**
+     * getBetPayload() 0 Set up the payload info needed when the rejoining
+     * player is the current bettor.
+     * @param {Object} player - Rejoining Player
+     */
     getBetPayload(player) {
-        // TODO: Implement getBetPayload  <--
-        console.log("getBetPayload");
+        var obj = {};
+        obj.currentBet = this.bet.currentBet;
+        obj.raiseCount = this.bet.raiseCount; 
+        obj.maxRaise = this.bet.maxRaise;
+        obj.prevBetSum = this.bet.getPlayerBetSum(player.name);
+        return obj;
     }
 
 };

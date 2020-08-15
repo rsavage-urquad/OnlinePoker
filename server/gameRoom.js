@@ -43,8 +43,8 @@ class GameRoom {
     setState(state, stateUser) {
         this.state = state;
         this.stateUser = stateUser;
-        // TODO: (Testing) To Be Removed
-        console.log(state + " - " + stateUser);
+        // TODO: (Testing) To be uncommented for testing purposes
+        //console.log(`${stateUser} - "${state}"`);
     };
     
     /**
