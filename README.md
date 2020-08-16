@@ -8,7 +8,7 @@ This project is an attempt to create a multi-room multiplayer application to all
 
 | Topic | Status | Description |
 | --- | :---: | --- |
-| Dealer Selection | *Working* | Both Manual and Random selection is available. |
+| Dealer Selection | *Done* | Both Manual and Random selection is available. |
 | Game Room Setup | *Planned* | This will include items such as Buy In, Default Ante Amount, Ante Mode, Chip Amounts, Max Raise Count, Max Total Raise, Room Lock ...
 | Troubleshooting Interface | *Planned* | Features are "to be determined" (as I identify scenarios where this functionality will be needed).
 
@@ -16,30 +16,30 @@ This project is an attempt to create a multi-room multiplayer application to all
 
 | Topic | Status |
 | --- | :---: |
-| Dealing - Non-Draw (Stud, 7/27 ...) | *Working* |
+| Dealing - Non-Draw (Stud, 7/27 ...) | *Done* |
 | Dealing - Draw | *Future* |
 | Dealing - Passing Cards | *Future* |
 | Dealing - Common Cards (Texas Holdem) | *Future* |
-| Card Display | *Working* |
-| Betting Initiation | *Working* |
-| Display Card Counts | *Working* |
+| Card Display | *Done* |
+| Betting Initiation | *Done* |
+| Display Card Counts | *Done* |
 
 ### Betting
 
 | Topic | Status |
 | --- | :---: |
-| Check | *Working* |
-| Call | *Working* |
-| Bet/Raise | *Working* |
-| Fold | *Working* |
+| Check | *Done* |
+| Call | *Done* |
+| Bet/Raise | *Done* |
+| Fold | *Done* |
 
 ### Hand Disposition
 
 | Topic | Status |
 | --- | :---: |
-| Display Hands | *Working but may change* |
-| Payout | *Working* |
-| Deck Disposition (Pass Deck/Deal Again) | *Working* |
+| Display Hands | *Implemented but may change* |
+| Payout | *Done* |
+| Deck Disposition (Pass Deck/Deal Again) | *Done* |
 
 ## Environment Details
 
