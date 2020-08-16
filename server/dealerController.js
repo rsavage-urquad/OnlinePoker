@@ -47,7 +47,7 @@ class DealerController {
      * @param {Object} payload - Game Details sent from Dealer
      */
     processHandSetup(payload) {
-        this.gameRoom.hand = new Hand(this.socketController, this.gameRoom, payload.gameName, payload.commentInfo, payload.anteAmount);
+        this.gameRoom.hand = new Hand(this.gameRoom, payload.gameName, payload.commentInfo, payload.anteAmount);
         this.gameRoom.hand.getAnte();
         this.gameRoom.setState("Deal", this.gameRoom.getDealer().name);
         this.socketController.broadcastPlayerList(this.gameRoom.room);
@@ -66,7 +66,7 @@ class DealerController {
         for (let i = 0; i < this.gameRoom.hand.players.length; i++) {
             // Deal a card to only active Players
             if (!this.gameRoom.hand.players[idx].fold) {
-                this.gameRoom.hand.dealToPlayer(this.gameRoom.hand.players[idx].name, payload.dealMode);
+                this.gameRoom.hand.dealToPlayer(this.gameRoom.hand.players[idx].name, payload.dealMode, false);
             }
             
             // Advance to the next player
@@ -84,7 +84,7 @@ class DealerController {
      */
     processDealToSpecific(payload) {
         let idx = this.gameRoom.hand.getHandPlayerIdx(payload.toPlayerName)
-        this.gameRoom.hand.dealToPlayer(this.gameRoom.hand.players[idx].name, payload.dealMode);
+        this.gameRoom.hand.dealToPlayer(this.gameRoom.hand.players[idx].name, payload.dealMode, payload.special);
 
         // Inform dealer that deal completed.
         this.socketController.dealerDealActionCompleted();

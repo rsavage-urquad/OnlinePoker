@@ -34,6 +34,8 @@ DealerController.prototype.setupEvents = function () {
     $("#dealToAll").unbind();
     $("#dealToNext").unbind();
     $("#dealToSpecific").unbind();
+    $("#dealSpecialToNext").unbind();
+    $("#dealSpecialToSpecific").unbind();
     $("#initiateBetting").unbind();
     $("#initiateBettingNext").unbind();
     $("#initiateBettingSpecific").unbind();
@@ -46,8 +48,12 @@ DealerController.prototype.setupEvents = function () {
     // Set Button Click Events
     $("#handStartButton").click({obj: this}, this.startHandClicked);
     $("#dealToAll").click({obj: this}, this.dealToAllClicked);
-    $("#dealToNext").click({obj: this}, this.dealToNextClicked);
-    $("#dealToSpecific").click({obj: this}, this.dealToSpecificClicked);
+
+    $("#dealToNext").click({obj: this, special: false}, this.dealToNextClicked);
+    $("#dealToSpecific").click({obj: this, special: false}, this.dealToSpecificClicked);
+    $("#dealSpecialToNext").click({obj: this, special: true}, this.dealToNextClicked);
+    $("#dealSpecialToSpecific").click({obj: this, special: true}, this.dealToSpecificClicked);
+
     $("#initiateBetting").click({obj: this}, this.initiateBettingClicked);
     $("#initiateBettingNext").click({obj: this}, this.initiateBettingNextClicked);
     $("#initiateBettingSpecific").click({obj: this}, this.initiateBettingSpecificClicked);
@@ -126,6 +132,7 @@ DealerController.prototype.dealToAllClicked = function(event) {
  */
 DealerController.prototype.dealToNextClicked = function(event) {
     var objThis = event.data.obj;
+    var dealSpecial = event.data.special;
     var command = "DealToSpecific";
     var payload = {};
 
@@ -135,6 +142,7 @@ DealerController.prototype.dealToNextClicked = function(event) {
     // Prepare and send command
     payload.dealMode = $("input[name='dealMode']:checked").val();
     payload.toPlayerName = objThis.playerApp.hand.players[objThis.playerApp.hand.dealToNextIdx].name;
+    payload.special = dealSpecial;
     objThis.sendDealerCommand(command, payload);
 
     // Advance Deal to Next
@@ -148,12 +156,13 @@ DealerController.prototype.dealToNextClicked = function(event) {
  */
 DealerController.prototype.dealToSpecificClicked = function(event) {
     var objThis = event.data.obj;
+    var dealSpecial = event.data.special;
 
     // Disable Dealer Commands until completion message received
     objThis.setDealerOptions("disable");       
 
     // Setup and display Select buttons
-    objThis.setupSelectButtons(objThis, objThis.dealToSpecificSelected);
+    objThis.setupSelectButtons(objThis, objThis.dealToSpecificSelected, dealSpecial);
 };
 
 /**
@@ -163,6 +172,7 @@ DealerController.prototype.dealToSpecificClicked = function(event) {
  */
 DealerController.prototype.dealToSpecificSelected = function(event) {
     var objThis = event.data.obj;
+    var dealSpecial = event.data.special;    
     var command = "DealToSpecific";
     var payload = {};
 
@@ -171,6 +181,7 @@ DealerController.prototype.dealToSpecificSelected = function(event) {
     // Prepare and send command
     payload.dealMode = $("input[name='dealMode']:checked").val();
     payload.toPlayerName = this.value;
+    payload.special = dealSpecial;    
     objThis.sendDealerCommand(command, payload);
 
     // Advance Deal to Next
@@ -250,7 +261,7 @@ DealerController.prototype.initiateBettingSpecificClicked = function(event) {
     objThis.setBetOptions("disable");
 
     // Setup and display Select buttons
-    objThis.setupSelectButtons(objThis, objThis.initiateBettingSpecificSelected);
+    objThis.setupSelectButtons(objThis, objThis.initiateBettingSpecificSelected, false);
 };
 
 /**
@@ -400,11 +411,13 @@ DealerController.prototype.setError = function(msg) {
 };
 
 /**
- * updateDealToNext() - Updates the hand's Deal to Next information
+ * updateDealToNext() - Updates the hand's Deal to Next information (including 
+ * Button displays).
  * @param {string} dealToNextName = Name of Player to deal to next.
  */
 DealerController.prototype.updateDealToNext = function(dealToNextName) {
     $("#dealToNext").text("Deal to " + dealToNextName);
+    $("#dealSpecialToNext").text("Special to " + dealToNextName);
     this.playerApp.hand.setDealToNextIdx(dealToNextName)
 };
 
@@ -425,14 +438,15 @@ DealerController.prototype.setDealerOptions = function(mode) {
 /**
  * setupSelectButtons() - Display the "Select" buttons for player specific processing
  * @param {Object} objThis - "this" reference
- * @param {*} callback - Function to call on click.
+ * @param {Function} callback - Function to call on click.
+ * @param {boolean} special - For Deal To Specific, should card be dealt as special?
  */
-DealerController.prototype.setupSelectButtons = function(objThis, callback) {
+DealerController.prototype.setupSelectButtons = function(objThis, callback, special) {
     buttonObj = $("#selectMe");
     buttonObj.unbind();
     // Do not display if player is folded.
     if (!objThis.playerApp.hand.hasPlayerFolded(objThis.playerApp.myName)) {
-        buttonObj.click({obj: objThis}, callback);
+        buttonObj.click({obj: objThis, special: special}, callback);
         buttonObj.show();
     }
 
@@ -442,7 +456,7 @@ DealerController.prototype.setupSelectButtons = function(objThis, callback) {
 
         // Do not display if player is folded.
         if (!objThis.playerApp.hand.hasPlayerFolded(item.name)) {
-            buttonObj.click({obj: objThis}, callback);
+            buttonObj.click({obj: objThis, special: special}, callback);
             buttonObj.show();
         }
     });    

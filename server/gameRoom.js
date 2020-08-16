@@ -43,7 +43,7 @@ class GameRoom {
     setState(state, stateUser) {
         this.state = state;
         this.stateUser = stateUser;
-        // TODO: (Testing) To be uncommented for testing purposes
+        // TODO: (Debugging) To be uncommented for testing purposes
         //console.log(`${stateUser} - "${state}"`);
     };
     

@@ -3,11 +3,13 @@
  * @param {string} suit - Card Suit ("H"=Hearts, "S"=Spades, "D"=Diamonds, "C"=Clubs).
  * @param {string} value - A,2,3,4,5,6,7,8,9,T,J,Q,K
  * @param {boolean} faceUp - Was card dealt face up?
+ * @param {boolean} special - Was card identified as Special (display raised)?
  */
-var Card = function (suit, value, faceUp) {
+var Card = function (suit, value, faceUp, special) {
     this.suit = suit;
     this.value = value;
     this.faceUp = faceUp;
+    this.special = special;
 };
 
 // ************************************************************************************************

@@ -61,7 +61,7 @@ Hand.prototype.receiveCard = function(cardInfo) {
         return;
     }
 
-    var card = new Card(cardInfo.card.suit, cardInfo.card.value, cardInfo.card.faceUp);
+    var card = new Card(cardInfo.card.suit, cardInfo.card.value, cardInfo.card.faceUp, cardInfo.card.special);
     this.hands[playerIdx].cards.push(card);
     this.displayHandCardsForPlayer(playerIdx, (player === this.playerApp.myName));
 };
@@ -232,6 +232,8 @@ Hand.prototype.displayHandCardsForPlayer = function(playerIdx, isMyPlayer) {
     var domAreaObj;
     var offsetValue;
     var leftOffset = 10;
+    var topOffsetNormal = "15px"
+    var topOffsetSpecial = "0"
 
     // Set display parameters
     if (isMyPlayer) {
@@ -252,6 +254,7 @@ Hand.prototype.displayHandCardsForPlayer = function(playerIdx, isMyPlayer) {
         var img = $("<img>");
         img.attr('src', "./client/img/cards/" + card.getImageName());
         img.css("position", "absolute");
+        img.css("top", (card.special) ? topOffsetSpecial : topOffsetNormal);
         img.css("left", leftOffset + "px");
         img.css("height", cardHeight + "px");
         domAreaObj.append(img);
@@ -275,7 +278,7 @@ Hand.prototype.populateAndDisplayAllHands = function(cardInfo) {
         realThis.hands[playerIdx].cards = [];
         // Populate cards received from server
         _.forEach(hand.cards, function(cardInfo) {
-            card = new Card(cardInfo.suit, cardInfo.value, cardInfo.faceUp);
+            card = new Card(cardInfo.suit, cardInfo.value, cardInfo.faceUp, cardInfo.special);
             realThis.hands[playerIdx].cards.push(card);
         });
 

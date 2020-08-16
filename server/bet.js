@@ -46,6 +46,16 @@ class Bet {
     advanceBettingPlayer(playerRaised) {
         let playerIdx = this.getPlayerIdx(this.currentPlayer);
 
+        // if there is only one player remaining, set Betting End flag and return.
+        let activePlayers = 0;
+        _.forEach(this.playerBets, function(player) {
+            activePlayers += (player.fold) ? 0 : 1;
+        });
+        if (activePlayers < 2) {
+            this.bettingEnded = true;
+            return;
+        }
+
         // If Current Player is the Stop Player, and they chose to Fold, set an flag to set a new Stop Player
         let stopPlayerFoldedCheck = ((this.currentPlayer === this.stopPlayer) && (this.playerBets[playerIdx].fold));
 

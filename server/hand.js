@@ -5,20 +5,10 @@ const HandPlayer = require("./handPlayer");
 const Bet = require("./bet");
 
 /**
- * Hand Object - Central controller for a hand'
- * Note on using "this.socketController" vs ."this.gameRoom.socketController"
- * 
- * "this.socketController" is set from dealerController at hand setup (and Dealer rejoin)
- * it should be used for explicit transmissions to the Dealer.
- * 
- * "this.gameRoom.socketController" is created upon initial Join of the first player
- * in the room and is (minimally) updated on all subsequent join (including rejoin) actions.
- * it should be used for emit to the Room or an individual Player.  Note that the originally
- * socket creator may have rejoined, to the original creator context may no longer be relevant.
+ * Hand Object - Central controller for a hand.
  */
 class Hand {
-    constructor (socketController, gameRoom, name, commentInfo, anteAmount) {
-        this.socketController = socketController;
+    constructor (gameRoom, name, commentInfo, anteAmount) {
         this.gameRoom = gameRoom;        
         this.name = name;
         this.commentInfo = commentInfo;
@@ -100,16 +90,16 @@ class Hand {
      * dealToPlayer() - Initiates the process to deal a card to a player.
      * @param {string} playerName - Player name to deal to.
      * @param {string} dealMode - Deal mode ("U"= Face Up, otherwise Face Down).
+     * @param {boolean} special - Should card be dealt as special (raised)?
      */
-    dealToPlayer(playerName, dealMode) {
+    dealToPlayer(playerName, dealMode, special) {
         const playerIdx = this.getHandPlayerIdx(playerName);
         const card = this.deck.dealNextCard();
 
         // Mark Card as Face Up, if applicable.  Default is Face Down
-        if (dealMode === "U") {
-            card.faceUp = true;
-        }
-        this.playerCards[playerIdx].cards.push(card);
+        if (dealMode === "U") { card.faceUp = true; }
+        card.special = special;
+         this.playerCards[playerIdx].cards.push(card);
         this.emitCard(playerName, card);
 
         // Update the Deal to Next index
@@ -208,6 +198,8 @@ class Hand {
      * @param {Array} payload - Payout details
      */
     processPayout(payload) {
+        const dealerSocketId = this.getDealerSocketId();
+
         // Distribute Payout
         this.distributePayout(payload);
 
@@ -216,7 +208,7 @@ class Hand {
         this.displayHandPlayerArea();     
 
         // Send Message to Dealer to Pass the Deck or Deal again.
-        this.socketController.dealerDeckDisposition();
+        this.gameRoom.socketController.dealerDeckDisposition(dealerSocketId);
     };
 
 
@@ -229,12 +221,14 @@ class Hand {
      */
     emitBetMessage() {
         const playerName = this.bet.currentPlayer;
+        const dealerSocketId = this.getDealerSocketId();
+
         let player = _.find(this.gameRoom.players, function(item) { return item.name === playerName; }); 
         let betPlayerIdx = _.findIndex(this.bet.playerBets, function(item) { return item.name === playerName; });
 
         // If there are no active players (betPlayerIdx = -1), send "dealerResume" message.
         if (betPlayerIdx === -1) {
-            this.socketController.dealerResume();
+            this.gameRoom.socketController.dealerResume(dealerSocketId);
             return;
         }
 
@@ -421,12 +415,13 @@ class Hand {
      * @param {boolean} playerRaised - Did player raise? 
      */
     sendNextBetMessage(playerRaised) {
+        const dealerSocketId = this.getDealerSocketId();        
         this.bet.advanceBettingPlayer(playerRaised);
 
         // If betting is completed, inform dealer to continue.
         if (this.bet.bettingEnded) {
             this.gameRoom.setState("Deal", this.gameRoom.getDealer().name);
-            this.gameRoom.dealerController.socketController.dealerResume();
+            this.gameRoom.socketController.dealerResume(dealerSocketId);
         }
         else {
             this.gameRoom.setState("Bet", this.bet.currentPlayer);
@@ -552,7 +547,16 @@ class Hand {
         obj.maxRaise = this.bet.maxRaise;
         obj.prevBetSum = this.bet.getPlayerBetSum(player.name);
         return obj;
-    }
+    };
+
+    /**
+     * getDealerSocketId() - Returns the Socket Id for the dealer.
+     * @returns {string} - Dealer's Socket Id.
+     */
+    getDealerSocketId() {
+        var dealerPlayerObj = this.gameRoom.getDealer();
+        return dealerPlayerObj.socketId;
+    };
 
 };
 

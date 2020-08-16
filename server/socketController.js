@@ -128,9 +128,9 @@ class SocketController {
 
     /**
      * emitToPlayer() -Emits a message to a specific player
-     * @param {*} socketId - Socket to send to.
-     * @param {*} messageType - Message Type
-     * @param {*} payload - Message Data (Object)
+     * @param {string} socketId - Socket to send to.
+     * @param {string} messageType - Message Type
+     * @param {Object} payload - Message Data (Object)
      */
     emitToPlayer(socketId, messageType, payload) {
         this.io.to(socketId).emit(messageType, payload);
@@ -183,17 +183,19 @@ class SocketController {
 
     /**
      * dealerResume() - Informs dealer to resume dealing.
+     * @param {string} socketId - Socket to send to.
      */
-    dealerResume() {
-        this.socket.emit("dealResume");
+    dealerResume(socketId) {
+        this.io.to(socketId).emit("dealResume");
     };
 
     /**
      * dealerDeckDisposition() - Hand has ended, request the dealer to select a disposition
      * for the deck.
+     * @param {string} socketId - Socket to send to.
      */
-    dealerDeckDisposition() {
-        this.socket.emit("deckDisposition");
+    dealerDeckDisposition(socketId) {
+        this.io.to(socketId).emit("deckDisposition");        
     };
 
 
