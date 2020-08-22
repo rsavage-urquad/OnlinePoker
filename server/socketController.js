@@ -1,4 +1,4 @@
-const Player = require("./Player");
+const Player = require("./player");
 const GameRoom = require("./gameRoom");
 const _ = require('lodash');
 
