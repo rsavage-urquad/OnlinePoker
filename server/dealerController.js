@@ -25,6 +25,9 @@ class DealerController {
             case "DealToSpecific":
                 this.processDealToSpecific(payload);
                 break;
+            case "RequestPayment":
+                this.processRequestPayment(payload);
+                break;
             case "BetInitiate":
                 this.processBetInitiate(payload);
                 break;
@@ -80,7 +83,7 @@ class DealerController {
 
     /**
      * processDealToSpecific() - Deals a card to a specific player.
-     * @param {*} payload - Includes if card should be dealt up/down and the player to deal to.
+     * @param {Object} payload - Includes if card should be dealt up/down and the player to deal to.
      */
     processDealToSpecific(payload) {
         let idx = this.gameRoom.hand.getHandPlayerIdx(payload.toPlayerName)
@@ -88,6 +91,15 @@ class DealerController {
 
         // Inform dealer that deal completed.
         this.socketController.dealerDealActionCompleted();
+    };
+
+    /**
+     * processRequestPayment() - Process the Request Payment message by passing 
+     * it to the Hand object.
+     * @param {Object} payload - Information pertaining to message.
+     */
+    processRequestPayment(payload) {
+        this.gameRoom.hand.requestPayment(payload.fromPlayer, payload.amount);
     };
 
     /**

@@ -160,7 +160,7 @@ BetController.prototype.betIncrementAmount = function(event) {
 };
 
 /**
- * beResetClicked() - Resets the current Bet amount
+ * betResetClicked() - Resets the current Bet amount
  * @param {Object} event - Object associated with triggered Event. 
  */
 BetController.prototype.betResetClicked = function(event) {
@@ -202,6 +202,7 @@ BetController.prototype.sendBetCommand = function(command, payload) {
         payload: payload
     });
 };
+
 
 // ************************************************************************************************
 // Display Processing Section

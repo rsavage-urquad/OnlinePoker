@@ -13,6 +13,7 @@ $(document).ready(function() {
 var PlayerApp = function() {
     this.hostDialog = new HostDialog(this);
     this.dealerController = new DealerController(this);
+    this.requestPaymentController = new RequestPaymentController(this);
     this.betController = new BetController(this);
     this.payoutController = new PayoutController(this);
     this.domHelpers = new DomHelpers();

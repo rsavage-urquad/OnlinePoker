@@ -381,6 +381,40 @@
       </div>
     </div> <!-- Bet/Raise Dialog-->
 
+    <!-- Request Payment Dialog -->
+    <div class="modal" tabindex="-1" role="dialog" id="reqPayDialog">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Request Payment</h5>
+          </div>
+          <div class="modal-body">
+            <div class="row row-padding">
+              <div class="col-md-3 align-right">From:</div>
+              <div class="col-md-7">
+                <select id="reqPayFromSelectList" class="form-control">
+                  <option value="">--Please choose an option--</option> <!-- Place holder-->
+                </select>
+              </div>
+            </div>
+            <div class="row row-padding">
+              <div class="col-md-12">Request Amount: <span id="reqPayAmt"></span></div>
+            </div>
+            <div class="row row-padding">
+              <div class="col-md-12 align-center">
+                <span id="reqPayChips" class="margin-right"></span>
+                <button id="reqPayResetButton" type="button" class="btn btn-outline-warning">Reset</button>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button id="reqPaySubmitButton" type="button" class="btn btn-primary">Submit</button>
+            <button id="reqPayCancelButton" type="button" class="btn btn-primary">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div> <!-- Request Payment Dialog-->
+
     <!-- Payout Dialog -->
     <div class="modal" tabindex="-1" role="dialog" id="payoutDialog">
       <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
@@ -431,11 +465,9 @@
 <script src="./client/js/hostDialog.js"></script>
 <script src="./client/js/dealerController.js"></script>
 <script src="./client/js/betController.js"></script>
+<script src="./client/js/requestPaymentController.js"></script>
 <script src="./client/js/payoutController.js"></script>
 <script src="./client/js/handPlayer.js"></script>
 <script src="./client/js/hand.js"></script>
 <script src="./client/js/card.js"></script>
 <script src="./client/js/playerApp.js"></script>
-
-<script>
-</script>

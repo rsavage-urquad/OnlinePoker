@@ -58,6 +58,7 @@ class Hand {
     resetHandPlayerAmounts() {
         _.forEach(this.players, function(p) {
             p.amount = 0;
+            p.extraAmount = 0;
         });
     };
 
@@ -106,6 +107,30 @@ class Hand {
         this.dealToNext = (this.dealToNext < (this.players.length - 1)) ? this.dealToNext + 1 : 0;
 
     };
+
+    /**
+     * requestPayment() - Handle the Request Payment message by transferring the amount 
+     * from the requested player.
+     * @param {string} fromPlayer - "From" Player's name.
+     * @param {number} amount - Amount to transfer.
+     */
+    requestPayment(fromPlayer, amount) {
+        var playerIdx = this.getHandPlayerIdx(fromPlayer);
+
+        // Validate Player was found.
+        if (playerIdx < 0) {
+            console.log(`Cannot find player for Request Payment - ${fromPlayer}`);
+            return;
+        }
+
+        // Transfer money from Player
+        this.updatePlayerAmount(fromPlayer, amount);
+        this.players[playerIdx].extraAmount += amount;
+
+        // Update Player & Hand Info areas
+        this.gameRoom.socketController.broadcastPlayerList(this.gameRoom.room);
+        this.displayHandPlayerArea();   
+    }
 
     /**
      * betInitiate() - Set up the bet object and send the Bet Request

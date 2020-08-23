@@ -65,9 +65,6 @@ function onConnect(socket) {
             return;
         } 
 
-        // TODO: (Testing) To be removed
-        console.log(data.command);
-
         const socketController = new SocketController(io, socket, rooms);
         const dealerController = new DealerController(socketController, rooms[data.room]);
         rooms[data.room].setDealerController(dealerController);

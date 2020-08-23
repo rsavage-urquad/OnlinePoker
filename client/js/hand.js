@@ -79,6 +79,7 @@ Hand.prototype.updatePlayerInfo = function(payload) {
     _.forEach(payload.playerInfo, function(player) {
         playerIdx = realThis.getIdxOfPlayerName(player.name);
         realThis.players[playerIdx].amount = player.amount;
+        realThis.players[playerIdx].extraAmount = player.extraAmount;
 
         // If the player has not folded, check to see if they have now folded and take action.
         if (!realThis.players[playerIdx].fold) {
@@ -124,6 +125,7 @@ Hand.prototype.setRejoinHandPlayers = function(playerInfo) {
         player = new HandPlayer(p.name, p.amount);
         player.fold = p.fold;
         player.declare = p.declare;
+        player.extraAmount = p.extraAmount;
         realThis.players.push(player);
         realThis.hands.push({ "playerName": p.name, "cards": [] });
     });

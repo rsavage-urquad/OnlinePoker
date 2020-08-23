@@ -22,7 +22,7 @@ DealerController.prototype.initialize = function () {
  * setupDom() - Perform any DOM Setup
  */
 DealerController.prototype.setupDom = function () {
-    $("#dealerCommandArea").hide();
+    this.hideShowDealerCommandArea("hide");
 };
 
 /**
@@ -36,6 +36,7 @@ DealerController.prototype.setupEvents = function () {
     $("#dealToSpecific").unbind();
     $("#dealSpecialToNext").unbind();
     $("#dealSpecialToSpecific").unbind();
+    $("#requestPayment").unbind();
     $("#initiateBetting").unbind();
     $("#initiateBettingNext").unbind();
     $("#initiateBettingSpecific").unbind();
@@ -54,6 +55,7 @@ DealerController.prototype.setupEvents = function () {
     $("#dealSpecialToNext").click({obj: this, special: true}, this.dealToNextClicked);
     $("#dealSpecialToSpecific").click({obj: this, special: true}, this.dealToSpecificClicked);
 
+    $("#requestPayment").click({obj: this}, this.requestPaymentClicked);
     $("#initiateBetting").click({obj: this}, this.initiateBettingClicked);
     $("#initiateBettingNext").click({obj: this}, this.initiateBettingNextClicked);
     $("#initiateBettingSpecific").click({obj: this}, this.initiateBettingSpecificClicked);
@@ -103,7 +105,7 @@ DealerController.prototype.initiateDealing = function(payload) {
     this.updateDealToNext(dealToNextName);
     $("#handSetupDialog").hide();
     $("#deckDispositionArea").hide();
-    $("#dealerCommandArea").show();
+    this.hideShowDealerCommandArea("show");
 };
 
 /**
@@ -199,7 +201,7 @@ DealerController.prototype.dealActionCompleted = function() {
  * dealResume() - Handles the "Deal Resume" message from the server.
  */
 DealerController.prototype.dealResume = function() {
-    $("#dealerCommandArea").show();
+    this.hideShowDealerCommandArea("show");
 };
 
 /**
@@ -207,15 +209,26 @@ DealerController.prototype.dealResume = function() {
  * displaying the options to the current dealer.
  */
 DealerController.prototype.deckDisposition = function() {
-    $("#dealerCommandArea").hide();
+    this.hideShowDealerCommandArea("hide");
     $("#initBetCommandArea").hide();
     $("#deckDispositionArea").show();
 };
 
 /**
+ * requestPaymentClicked() - Handle the Request Payment clicked event by preparing
+ * and displaying the Request Payment dialog.
+ * @param {Object} event - Object associated with triggered Event.
+ */
+DealerController.prototype.requestPaymentClicked = function(event) {
+    var objThis = event.data.obj;
+    objThis.playerApp.requestPaymentController.initialize();
+    $("#reqPayDialog").show();
+}
+
+/**
  * initiateBettingClicked() - Handle the Initiate Betting clicked event by preparing
  * and displaying the Initiate Betting options
- * @param {*} event - Object associated with triggered Event.
+ * @param {Object} event - Object associated with triggered Event.
  */
 DealerController.prototype.initiateBettingClicked = function(event) {
     var objThis = event.data.obj;
@@ -225,7 +238,7 @@ DealerController.prototype.initiateBettingClicked = function(event) {
     $("#initiateBetNext").text("Start with " + objThis.playerApp.hand.players[playerIdx].name);
   
     // Display commands
-    $("#dealerCommandArea").hide();
+    objThis.hideShowDealerCommandArea("hide");
     $("#initBetCommandArea").show();
 };
 
@@ -275,7 +288,7 @@ DealerController.prototype.initiateBettingCancelClicked = function(event) {
     $(".select-player").hide();
     objThis.setBetOptions("enable");
     $("#initBetCommandArea").hide();
-    $("#dealerCommandArea").show();
+    objThis.hideShowDealerCommandArea("show");
 }
 
 /**
@@ -382,8 +395,8 @@ DealerController.prototype.sendDealerCommand = function(command, payload) {
  * dealerSetup() - Prepares the Dealer Setup dialog and hide the Dealer commands
  */
 DealerController.prototype.dealerSetup = function(payload) {
-    $("#deckDispositionArea").hide();    
-    $("#dealerCommandArea").hide();
+    $("#deckDispositionArea").hide();
+    this.hideShowDealerCommandArea("hide");
 
     if (payload.name === this.playerApp.myName) {
         $("#handGameName").val("");
@@ -473,6 +486,20 @@ DealerController.prototype.setBetOptions = function(mode) {
     _.forEach(domElements, function(elem) {
         domElements.prop("disabled", isDisable);
     });
+};
+
+/**
+ * hideShowDealerCommandArea - Hide or show the Dealer Command area contents.
+ * @param {string} mode - "hide" or "show" 
+ */
+DealerController.prototype.hideShowDealerCommandArea = function(mode) {
+    if (mode.toLowerCase() === "hide") {
+        $("#dealerCommandArea").hide();
+    }
+    else {
+        $("#dealerCommandArea").show();
+    }
+
 };
 
 // ************************************************************************************************

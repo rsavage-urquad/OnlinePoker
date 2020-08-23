@@ -45,4 +45,4 @@ This project is an attempt to create a multi-room multiplayer application to all
 
 - **Server:** Node.js
 - **Client:** JavaScript in the Browser
-- Plan on hosting via Docker Container
+- Hosting via Docker Container
