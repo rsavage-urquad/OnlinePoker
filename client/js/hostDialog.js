@@ -22,7 +22,8 @@ HostDialog.prototype.initialize = function () {
  * setupDom() - Perform any DOM Setup
  */
 HostDialog.prototype.setupDom = function () {
-    $("#pickDealerRandom").attr('checked', true);
+    $("#pickDealerRandom").prop("checked", true);
+    $("#pickDealerManual").prop("checked", false);
     $("#pickDealerSelectRow").hide();
 };
 
@@ -46,9 +47,12 @@ HostDialog.prototype.setupEvents = function () {
 
 /**
  * open() - Opens the Host Dialog
+ * @param {Object} event - Object associated with triggered Event. 
  */
-HostDialog.prototype.open = function () {
-    // TODO: (Cleanup) Reset default values in dialog.   
+HostDialog.prototype.open = function (event) {
+    var objThis = event.data.obj;
+
+    objThis.resetHostOptions();
     $("#hostDialog").show();
 };
 
@@ -129,3 +133,10 @@ HostDialog.prototype.setError = function(msg) {
 // ************************************************************************************************
 // Helpers Section
 // ************************************************************************************************
+
+/**
+ * resetHostOptions() - Reset Host Option to default values in the dialog
+ */
+HostDialog.prototype.resetHostOptions = function() {
+    this.setupDom();
+};

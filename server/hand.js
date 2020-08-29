@@ -17,7 +17,7 @@ class Hand {
         this.players = this.initializePlayers();
         this.playerCards = this.initializePlayerCards();
         this.dealerIdx = this.gameRoom.getDealerIdx();
-        this.dealToNext = (this.dealerIdx < (this.players.length - 1)) ? this.dealerIdx + 1 : 0;
+        this.dealToNext = this.getPlayerIdxLeftOfDealer();
         this.bet = {};
 
         // Shuffle the deck
@@ -60,6 +60,15 @@ class Hand {
             p.amount = 0;
             p.extraAmount = 0;
         });
+    };
+
+    /**
+     * getPlayerIdxLeftOfDealer() - Returns the index of the Player to the left of
+     * the Dealer
+     * @returns {number} - Index of the Player to the left of the Dealer
+     */
+    getPlayerIdxLeftOfDealer() {
+        return (this.dealerIdx < (this.players.length - 1)) ? this.dealerIdx + 1 : 0;
     };
 
 
@@ -138,6 +147,7 @@ class Hand {
      * @param {string} playerName - Starting bettor's name.
      */
     betInitiate(playerName) {
+        this.dealToNext = this.getPlayerIdxLeftOfDealer();
         this.bet = new Bet(this, playerName, this.gameRoom.maxRaise);
         this.gameRoom.setState("Bet", playerName);
         this.emitBetMessage();
@@ -446,7 +456,7 @@ class Hand {
         // If betting is completed, inform dealer to continue.
         if (this.bet.bettingEnded) {
             this.gameRoom.setState("Deal", this.gameRoom.getDealer().name);
-            this.gameRoom.socketController.dealerResume(dealerSocketId);
+            this.gameRoom.socketController.dealerResume(dealerSocketId, this.players[this.dealToNext].name);
         }
         else {
             this.gameRoom.setState("Bet", this.bet.currentPlayer);

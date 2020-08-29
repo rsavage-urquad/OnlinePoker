@@ -12,6 +12,8 @@ var Hand = function (playerApp, gameName, commentInfo, playerInfo) {
     this.players = this.initializePlayers(playerInfo);
     this.hands = this.initializeHands();
     this.dealToNextIdx = 0;
+
+    $("#deckStats").empty();
 };
 
 // ************************************************************************************************
@@ -254,7 +256,7 @@ Hand.prototype.displayHandCardsForPlayer = function(playerIdx, isMyPlayer) {
     domAreaObj.empty();
     _.forEach(this.hands[playerIdx].cards, function(card, idx) {
         var img = $("<img>");
-        img.attr('src', "./client/img/cards/" + card.getImageName());
+        img.prop('src', "./client/img/cards/" + card.getImageName());
         img.css("position", "absolute");
         img.css("top", (card.special) ? topOffsetSpecial : topOffsetNormal);
         img.css("left", leftOffset + "px");

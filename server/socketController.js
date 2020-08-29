@@ -184,9 +184,10 @@ class SocketController {
     /**
      * dealerResume() - Informs dealer to resume dealing.
      * @param {string} socketId - Socket to send to.
+     * @param {string} dealToNextName - Name of player to deal to next.
      */
-    dealerResume(socketId) {
-        this.io.to(socketId).emit("dealResume");
+    dealerResume(socketId, dealToNextName) {
+        this.io.to(socketId).emit("dealResume", { "dealToNextName":  dealToNextName });
     };
 
     /**

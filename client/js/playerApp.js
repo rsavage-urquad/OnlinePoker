@@ -69,8 +69,6 @@ PlayerApp.prototype.setupEvents = function () {
     // Set Button Click Events
     $("#generateRoomButton").click({obj: this}, this.generateRoom);
     $("#joinButton").click({obj: this}, this.join);
-    $("#hostOpenDialogButton").click({obj: this.hostDialog}, this.hostDialog.open);
-    $("#hostCloseDialogButton").click({obj: this.hostDialog}, this.hostDialog.close);
 };
 
 /**

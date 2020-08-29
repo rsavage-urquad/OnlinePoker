@@ -43,6 +43,7 @@ DealerController.prototype.setupEvents = function () {
     $("#initiateBettingCancel").unbind();
     $("#endShowHands").unbind();
     $("#endHand").unbind();
+    $("#reDealHand").unbind();
     $("#deckPass").unbind();
     $("#deckDealAgain").unbind();
 
@@ -62,6 +63,7 @@ DealerController.prototype.setupEvents = function () {
     $("#initiateBettingCancel").click({obj: this}, this.initiateBettingCancelClicked);
     $("#endShowHands").click({obj: this}, this.endShowAllHandsClicked);
     $("#endHand").click({obj: this}, this.endHandClicked);
+    $("#reDealHand").click({obj: this}, this.reDealHandClicked);
     $("#deckPass").click({obj: this}, this.deckPassClicked);
     $("#deckDealAgain").click({obj: this}, this.deckDealAgainClicked);
 };
@@ -200,7 +202,8 @@ DealerController.prototype.dealActionCompleted = function() {
 /**
  * dealResume() - Handles the "Deal Resume" message from the server.
  */
-DealerController.prototype.dealResume = function() {
+DealerController.prototype.dealResume = function(payload) {
+    this.updateDealToNext(payload.dealToNextName);
     this.hideShowDealerCommandArea("show");
 };
 
@@ -334,6 +337,11 @@ DealerController.prototype.endHandClicked = function(event) {
     var minChipValue = objThis.playerApp.betController.getMinChipValue();
 
     objThis.playerApp.payoutController.preparePayoutDialog(remainingPlayers, potAmount, minChipValue);
+};
+
+DealerController.prototype.reDealHandClicked = function(event) {
+    // TODO: Implement Re-Deal Hand <-----
+    window.alert("Not yet implemented");
 };
 
 /**

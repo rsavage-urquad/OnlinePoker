@@ -115,8 +115,8 @@ socket.on("dealerCommandFailure", function(payload) {
     console.log("Dealer Command Failure - " + payload);
 });
 
-socket.on("dealResume", function() {
-    playerApp.dealerController.dealResume();
+socket.on("dealResume", function(payload) {
+    playerApp.dealerController.dealResume(payload);
 });
 
 /**
