@@ -13,15 +13,14 @@ class Hand {
         this.name = name;
         this.commentInfo = commentInfo;
         this.anteAmount = parseFloat(anteAmount);
-        this.deck = new Deck();
         this.players = this.initializePlayers();
         this.playerCards = this.initializePlayerCards();
         this.dealerIdx = this.gameRoom.getDealerIdx();
         this.dealToNext = this.getPlayerIdxLeftOfDealer();
         this.bet = {};
 
-        // Shuffle the deck
-        this.deck.shuffle();
+        // Create and Shuffle the deck
+        this.prepareDeck();
     };
 
     // ************************************************************************************************
@@ -71,6 +70,21 @@ class Hand {
         return (this.dealerIdx < (this.players.length - 1)) ? this.dealerIdx + 1 : 0;
     };
 
+    /**
+     * resetPlayerCards() - Resets Players cards and deal to next.  Generally used for re-deal.
+     */
+    resetPlayerCards() {
+        this.playerCards = this.initializePlayerCards();
+        this.dealToNext = this.getPlayerIdxLeftOfDealer();
+    };
+
+    /**
+     * prepareDeck() - Creates the Deck object and shuffles the deck.
+     */
+    prepareDeck() {
+        this.deck = new Deck();
+        this.deck.shuffle();        
+    };
 
     // ************************************************************************************************
     // Action Methods

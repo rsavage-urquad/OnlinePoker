@@ -236,19 +236,19 @@ Hand.prototype.displayHandCardsForPlayer = function(playerIdx, isMyPlayer) {
     var domAreaObj;
     var offsetValue;
     var leftOffset = 10;
-    var topOffsetNormal = "15px"
+    var topOffsetNormal = this.playerApp.displayDetails.topOffsetNormal + "px";
     var topOffsetSpecial = "0"
 
     // Set display parameters
     if (isMyPlayer) {
         cardArea = "playerCards";
-        cardHeight = 160;
-        offsetValue = 120;
+        cardWidth = this.playerApp.displayDetails.dealerCardWidth;
+        offsetValue = this.playerApp.displayDetails.dealerOffsetValue;
     }
     else {
         cardArea = this.playerApp.getPlayerCardAreaName(playerIdx)
-        cardHeight = 120;
-        offsetValue = 60;
+        cardWidth = this.playerApp.displayDetails.playerCardWidth;
+        offsetValue = this.playerApp.displayDetails.playerOffsetValue;
     }
 
     // Render the card area with the cards from the hand.
@@ -260,7 +260,7 @@ Hand.prototype.displayHandCardsForPlayer = function(playerIdx, isMyPlayer) {
         img.css("position", "absolute");
         img.css("top", (card.special) ? topOffsetSpecial : topOffsetNormal);
         img.css("left", leftOffset + "px");
-        img.css("height", cardHeight + "px");
+        img.css("width", cardWidth + "px");
         domAreaObj.append(img);
         
         leftOffset += offsetValue;

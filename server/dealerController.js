@@ -37,7 +37,10 @@ class DealerController {
             case "Payout":
                 this.processPayout(payload);
                 break;    
-            default:
+            case "ReDealHand":
+                this.processReDealHand(payload);
+                break;    
+                default:
                 this.socketController.dealerCommandFailure(`Unknown Command - ${command}`);                
                 return;
         }
@@ -126,6 +129,21 @@ class DealerController {
      */
     processPayout(payload) {
         this.gameRoom.hand.processPayout(payload);
+    };
+
+    /**
+     * processReDealHand() - Process the Re-Deal message by setting up the preparing the Hand.
+     * @param {Object} payload - Contains indicator to determine if ante is required. 
+     */
+    processReDealHand(payload) {
+        this.gameRoom.hand.resetPlayerCards();
+        this.gameRoom.hand.prepareDeck();
+        if (payload.ante) {
+            this.gameRoom.hand.getAnte();
+        }
+        this.gameRoom.setState("Deal", this.gameRoom.getDealer().name);
+        this.socketController.broadcastPlayerList(this.gameRoom.room);
+        this.gameRoom.hand.displayHandInfo();
     };
 };
 

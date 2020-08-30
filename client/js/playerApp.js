@@ -1,7 +1,9 @@
 var playerApp = null;
+var BASE_DISPLAY_WIDTH = 1920; 
+var BASE_DISPLAY_HEIGHT = 937;
 
 /**
- * create the Plater Application object
+ * create the Player Application object
  */
 $(document).ready(function() {
     playerApp = new PlayerApp();
@@ -25,12 +27,30 @@ var PlayerApp = function() {
     this.mySocketId;
     this.isHost;
     this.hand = {};
+    this.displayDetails = {}
+
+    this.prepareDisplayDetails();
     this.initialize();
 } 
 
 // ************************************************************************************************
 // Initialization Section
 // ************************************************************************************************
+
+/**
+ * prepareDisplayDetails() - Prepares the card display details based on the display 
+ * area width.
+ */
+PlayerApp.prototype.prepareDisplayDetails = function() {
+    var wFactor = window.innerWidth / BASE_DISPLAY_WIDTH;
+    var hFactor = window.innerHeight / BASE_DISPLAY_HEIGHT;
+
+    this.displayDetails.dealerCardWidth = Math.floor(110 * wFactor);
+    this.displayDetails.dealerOffsetValue = Math.floor(120 * wFactor);
+    this.displayDetails.playerCardWidth = Math.floor(83 * wFactor);
+    this.displayDetails.playerOffsetValue = Math.floor(60 * wFactor);
+    this.displayDetails.topOffsetNormal = Math.floor(15 * hFactor);
+};
 
 /**
  * initialize() - Initialize the Player Application object
@@ -44,6 +64,7 @@ PlayerApp.prototype.initialize = function () {
  * setupDom() - Perform any DOM Setup
  */
 PlayerApp.prototype.setupDom = function () {
+    this.resetHeights();
     $("#hostOpenDialogButton").hide();
 
     // Set the Room Id from the Query String.
@@ -81,6 +102,26 @@ PlayerApp.prototype.initializeHand = function(payload) {
     this.hand.displayHandPlayerInfo("handPlayerInfoArea");
     this.hand.clearPlayerCardAreas();
 };
+
+/**
+ * resetHeights() - Resets the various containers based on the display 
+ * area height.
+ */
+PlayerApp.prototype.resetHeights = function() {
+    var factor = window.innerHeight / BASE_DISPLAY_HEIGHT;
+    var opponentContainer = Math.floor(200 * factor);
+    var playerContainer = Math.floor(250 * factor);
+    var infoContainer = Math.floor(250 * factor);
+    var playerInfoContainer = Math.floor(220 * factor);
+    var handInfoContainer = Math.floor(280 * factor);
+
+    $(".opponent-container").css("min-height", opponentContainer + "px");
+    $(".player-container").css("min-height", playerContainer + "px");
+    $(".info-container").css("min-height", infoContainer + "px");
+    $(".info-container.player-info-container").css("min-height", playerInfoContainer + "px");
+    $(".info-container.hand-info-container").css("min-height", handInfoContainer + "px");
+};
+
 
 // ************************************************************************************************
 // Events Section

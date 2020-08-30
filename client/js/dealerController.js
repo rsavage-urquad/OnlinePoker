@@ -43,7 +43,8 @@ DealerController.prototype.setupEvents = function () {
     $("#initiateBettingCancel").unbind();
     $("#endShowHands").unbind();
     $("#endHand").unbind();
-    $("#reDealHand").unbind();
+    $("#reDealHandAnte").unbind();
+    $("#reDealHandNoAnte").unbind();
     $("#deckPass").unbind();
     $("#deckDealAgain").unbind();
 
@@ -63,7 +64,8 @@ DealerController.prototype.setupEvents = function () {
     $("#initiateBettingCancel").click({obj: this}, this.initiateBettingCancelClicked);
     $("#endShowHands").click({obj: this}, this.endShowAllHandsClicked);
     $("#endHand").click({obj: this}, this.endHandClicked);
-    $("#reDealHand").click({obj: this}, this.reDealHandClicked);
+    $("#reDealHandAnte").click({obj: this, ante: true}, this.reDealHandClicked);
+    $("#reDealHandNoAnte").click({obj: this, ante: false}, this.reDealHandClicked);
     $("#deckPass").click({obj: this}, this.deckPassClicked);
     $("#deckDealAgain").click({obj: this}, this.deckDealAgainClicked);
 };
@@ -339,9 +341,16 @@ DealerController.prototype.endHandClicked = function(event) {
     objThis.playerApp.payoutController.preparePayoutDialog(remainingPlayers, potAmount, minChipValue);
 };
 
+/**
+ * reDealHandClicked() - Handle the "Re-Deal Hand" button click event by calling the Re-Deal 
+ * Controller.
+ * @param {Object} event - Object associated with triggered Event.
+ */
 DealerController.prototype.reDealHandClicked = function(event) {
-    // TODO: Implement Re-Deal Hand <-----
-    window.alert("Not yet implemented");
+    var objThis = event.data.obj;
+    var ante = event.data.ante;
+
+    objThis.sendDealerCommand("ReDealHand", { "ante": ante });    
 };
 
 /**
